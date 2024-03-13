@@ -43,12 +43,7 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   nistManager->FindOrBuildMaterial("G4_AIR");
   fDetMaterial = nistManager->FindOrBuildMaterial("G4_Ge");
   fStopMaterial = nistManager->FindOrBuildMaterial("G4_Pb");
-  G4Element *elK =  new G4Element("Potassium", "K",  19., 39.0983*g/mole);
-  G4Element *elCl = new G4Element("Chlorine",  "Cl", 17., 35.45*g/mole);
-  G4Material *mKCl = new G4Material("PotassiumChloride", 1.984*g/cm3, 2);
-  mKCl->AddElement(elK, 1);
-  mKCl->AddElement(elCl, 1);
-  fSrcMaterial = mKCl;
+  fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
@@ -72,6 +67,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
 
   const double detectorRadius = 35*mm;
   const double detectorHeight = 207.4*mm;
+
+  const double sourceRadius = 25.4*mm;
+  const double sourceHeight = 3.175*mm;
 
   G4Material *air = G4Material::GetMaterial("G4_AIR");
 
@@ -113,10 +111,11 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4Transform3D detTR = G4Transform3D(detRM, det3V);
   G4VPhysicalVolume *detPV = new G4PVPlacement(detTR, detLV, "Detector", worldLV, false, 0, fCheckOverlaps);
 
-  G4Tubs *srcS = new G4Tubs("source", 0, 20.*mm, 35.*mm, 0.*deg, 360.*deg);
+  G4Tubs *srcS = new G4Tubs("source", 0, sourceRadius, sourceHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
   G4RotationMatrix srcRM = G4RotationMatrix();
-  G4ThreeVector src3V = G4ThreeVector(0, (detectorHeight + 20.)*mm, 0);
+  srcRM.rotateX(90.*deg);
+  G4ThreeVector src3V = G4ThreeVector(0, (detectorHeight + sourceHeight/2), 0);
   G4Transform3D srcTR = G4Transform3D(srcRM, src3V);
   new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
