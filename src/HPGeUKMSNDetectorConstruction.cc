@@ -44,6 +44,7 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fDetMaterial = nistManager->FindOrBuildMaterial("G4_Ge");
   fStopMaterial = nistManager->FindOrBuildMaterial("G4_Pb");
   fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
+  fStandMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
@@ -70,6 +71,11 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
 
   const double sourceRadius = 25.4*mm;
   const double sourceHeight = 3.175*mm;
+
+  const double cylStandOuterRadius   = 70*mm;
+  const double cylStandThickness     = 5*mm;
+  const double cylStandHeight        = 270*mm;
+  const double cylSrcHolderThickness = 10*mm;
 
   G4Material *air = G4Material::GetMaterial("G4_AIR");
 
@@ -115,9 +121,25 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
   G4RotationMatrix srcRM = G4RotationMatrix();
   srcRM.rotateX(90.*deg);
-  G4ThreeVector src3V = G4ThreeVector(0, (detectorHeight + sourceHeight/2), 0);
+  G4ThreeVector src3V = G4ThreeVector(0, (baseShieldThickness + fSrcBaseHeight + sourceHeight/2), 0);
   G4Transform3D srcTR = G4Transform3D(srcRM, src3V);
   new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *cylStandS = new G4Tubs("cylindricalStand", cylStandOuterRadius - cylStandThickness, cylStandOuterRadius, cylStandHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *cylStandLV = new G4LogicalVolume(cylStandS, fStandMaterial, "CylindricalStand");
+  G4RotationMatrix cylStandRM = G4RotationMatrix();
+  cylStandRM.rotateX(90.*deg);
+  G4ThreeVector cylStand3V = G4ThreeVector(0, baseShieldThickness + cylStandHeight/2, 0);
+  G4Transform3D cylStandTR = G4Transform3D(cylStandRM, cylStand3V);
+  new G4PVPlacement(cylStandTR, cylStandLV, "CylindricalStand", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *cylSrcHolderS = new G4Tubs("cylSrcHolder", 0, cylStandOuterRadius - cylStandThickness, cylSrcHolderThickness/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *cylSrcHolderLV = new G4LogicalVolume(cylSrcHolderS, fStandMaterial, "CylStandSrcHolder");
+  G4RotationMatrix cylSrcHolderRM = G4RotationMatrix();
+  cylSrcHolderRM.rotateX(90.*deg);
+  G4ThreeVector cylSrcHolder3V = G4ThreeVector(0, baseShieldThickness + fSrcBaseHeight - cylSrcHolderThickness/2, 0);
+  G4Transform3D cylSrcHolderTR = G4Transform3D(cylSrcHolderRM, cylSrcHolder3V);
+  new G4PVPlacement(cylSrcHolderTR, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
   worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
   baseshieldLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 0.0, 0.0)));
@@ -125,6 +147,8 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   doorshieldLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 0.0, 1.0)));
   detLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 1.0, 1.0)));
   srcLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 1.0, 0.0)));
+  cylStandLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 1.0, 0.0)));
+  cylSrcHolderLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 1.0, 0.0)));
 
   return worldPV;
 }

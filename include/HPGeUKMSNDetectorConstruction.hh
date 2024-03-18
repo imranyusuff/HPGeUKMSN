@@ -2,6 +2,7 @@
 #define HPGeUKMSNDetectorConstruction_h 1
 
 #include "G4VUserDetectorConstruction.hh"
+#include "G4SystemOfUnits.hh"
 
 
 class G4VPhysicalVolume;
@@ -24,8 +25,11 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fDetMaterial;
     G4Material *fStopMaterial;
     G4Material *fSrcMaterial;
+    G4Material *fStandMaterial;
 
     G4bool fCheckOverlaps;
+
+    G4double fSrcBaseHeight = 180.*mm;
 };
 
 
