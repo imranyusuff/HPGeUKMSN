@@ -5,6 +5,8 @@
 #include "G4Material.hh"
 #include "G4Element.hh"
 #include "G4SDManager.hh"
+#include "G4RunManager.hh"
+#include "G4GenericMessenger.hh"
 
 #include "G4Box.hh"
 #include "G4Tubs.hh"
@@ -23,6 +25,7 @@ HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction()
 : G4VUserDetectorConstruction(),
   fCheckOverlaps(true)
 {
+  DefineCommands();
 }
 
 
@@ -121,9 +124,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
   G4RotationMatrix srcRM = G4RotationMatrix();
   srcRM.rotateX(90.*deg);
-  G4ThreeVector src3V = G4ThreeVector(0, (baseShieldThickness + fSrcBaseHeight + sourceHeight/2), 0);
+  G4ThreeVector src3V = G4ThreeVector(0, (baseShieldThickness + fSrcBaseDistance + sourceHeight/2), 0);
   G4Transform3D srcTR = G4Transform3D(srcRM, src3V);
-  new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
+  fSrcPV = new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
   G4Tubs *cylStandS = new G4Tubs("cylindricalStand", cylStandOuterRadius - cylStandThickness, cylStandOuterRadius, cylStandHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *cylStandLV = new G4LogicalVolume(cylStandS, fStandMaterial, "CylindricalStand");
@@ -137,9 +140,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4LogicalVolume *cylSrcHolderLV = new G4LogicalVolume(cylSrcHolderS, fStandMaterial, "CylStandSrcHolder");
   G4RotationMatrix cylSrcHolderRM = G4RotationMatrix();
   cylSrcHolderRM.rotateX(90.*deg);
-  G4ThreeVector cylSrcHolder3V = G4ThreeVector(0, baseShieldThickness + fSrcBaseHeight - cylSrcHolderThickness/2, 0);
+  G4ThreeVector cylSrcHolder3V = G4ThreeVector(0, baseShieldThickness + fSrcBaseDistance - cylSrcHolderThickness/2, 0);
   G4Transform3D cylSrcHolderTR = G4Transform3D(cylSrcHolderRM, cylSrcHolder3V);
-  new G4PVPlacement(cylSrcHolderTR, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
+  fCylSrcHolderPV = new G4PVPlacement(cylSrcHolderTR, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
   worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
   baseshieldLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 0.0, 0.0)));
@@ -159,5 +162,37 @@ void HPGeUKMSNDetectorConstruction::ConstructSDandField()
   HPGeUKMSNDetectorSD *detSD = new HPGeUKMSNDetectorSD("/Detector", "DetectorHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(detSD);
   SetSensitiveDetector("Detector", detSD, true);
+}
+
+
+void HPGeUKMSNDetectorConstruction::SetSourceBaseDistance(G4double distance)
+{
+  if (!fSrcPV || !fCylSrcHolderPV) {
+      G4cerr << "Detector has not yet been constructed." << G4endl;
+      return;
+  }
+
+  const double oldDistance = fSrcBaseDistance;
+  fSrcBaseDistance = distance;
+  fSrcPV->SetTranslation(G4ThreeVector(
+    0, fSrcPV->GetTranslation().y() - oldDistance + fSrcBaseDistance, 0));
+  fCylSrcHolderPV->SetTranslation(G4ThreeVector(
+    0, fCylSrcHolderPV->GetTranslation().y() - oldDistance + fSrcBaseDistance, 0));
+
+  // tell G4RunManager that we change the geometry
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+
+void HPGeUKMSNDetectorConstruction::DefineCommands()
+{
+  fMessenger = new G4GenericMessenger(this, "/hpge/source/", "Source control");
+
+  auto& srcDistCmd = fMessenger->DeclareMethodWithUnit("baseDistance", "mm",
+                       &HPGeUKMSNDetectorConstruction::SetSourceBaseDistance,
+                       "Distance from detector top to base of source (default mm).");
+  srcDistCmd.SetParameterName("distance", true);
+  srcDistCmd.SetRange("distance>=0.");
+  srcDistCmd.SetDefaultValue("180.");
 }
 
