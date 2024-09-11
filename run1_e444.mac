@@ -1,0 +1,6 @@
+/run/initialize
+/control/verbose 2
+/run/verbose 2
+/gun/energy 444 keV
+/run/beamOn 100000
+
