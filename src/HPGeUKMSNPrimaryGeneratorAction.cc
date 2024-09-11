@@ -23,7 +23,7 @@ HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction()
 
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1., 0., 0.));
-  fParticleGun->SetParticleEnergy(1.46 * MeV);
+  fParticleGun->SetParticleEnergy(0.661657 * MeV);
 }
 
 
