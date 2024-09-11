@@ -76,9 +76,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   const double sourceHeight = 3.175*mm;
 
   const double cylStandOuterRadius   = 70*mm;
-  const double cylStandThickness     = 5*mm;
+  const double cylStandThickness     = 3*mm;
   const double cylStandHeight        = 270*mm;
-  const double cylSrcHolderThickness = 10*mm;
+  const double cylSrcHolderThickness = 3*mm;
 
   G4Material *air = G4Material::GetMaterial("G4_AIR");
 
