@@ -30,7 +30,9 @@ HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction()
 
 
 HPGeUKMSNDetectorConstruction::~HPGeUKMSNDetectorConstruction()
-{}
+{
+  delete fMessenger;
+}
 
 
 G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::Construct()
@@ -162,7 +164,7 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
   G4RotationMatrix srcRM = G4RotationMatrix();
   srcRM.rotateX(90.*deg);
-  G4ThreeVector src3V = G4ThreeVector(0, (baseShieldThickness + fSrcBaseDistance + sourceHeight/2), 0);
+  G4ThreeVector src3V = G4ThreeVector(0, (baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + sourceHeight/2), 0);
   G4Transform3D srcTR = G4Transform3D(srcRM, src3V);
   fSrcPV = new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
@@ -178,21 +180,29 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4LogicalVolume *cylSrcHolderLV = new G4LogicalVolume(cylSrcHolderS, fStandMaterial, "CylStandSrcHolder");
   G4RotationMatrix cylSrcHolderRM = G4RotationMatrix();
   cylSrcHolderRM.rotateX(90.*deg);
-  G4ThreeVector cylSrcHolder3V = G4ThreeVector(0, baseShieldThickness + fSrcBaseDistance - cylSrcHolderThickness/2, 0);
+  G4ThreeVector cylSrcHolder3V = G4ThreeVector(0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance - cylSrcHolderThickness/2, 0);
   G4Transform3D cylSrcHolderTR = G4Transform3D(cylSrcHolderRM, cylSrcHolder3V);
   fCylSrcHolderPV = new G4PVPlacement(cylSrcHolderTR, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
-  worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
-  baseshieldLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 0.0, 0.0)));
-  bodyshieldLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 0.0, 0.0)));
-  doorshieldLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 0.0, 1.0)));
-  detLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 1.0, 1.0)));
-  detHolderLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 0.0, 1.0)));
-  endcapLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 0.0, 1.0)));
-  endcapTopLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 0.0, 1.0)));
-  srcLV->SetVisAttributes(new G4VisAttributes(G4Colour(1.0, 1.0, 0.0)));
-  cylStandLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 1.0, 0.0)));
-  cylSrcHolderLV->SetVisAttributes(new G4VisAttributes(G4Colour(0.0, 1.0, 0.0)));
+  G4VisAttributes invisible(G4VisAttributes::GetInvisible());
+  G4VisAttributes red(G4Colour::Red());
+  G4VisAttributes green(G4Colour::Green());
+  G4VisAttributes blue(G4Colour::Blue());
+  G4VisAttributes yellow(G4Colour::Yellow());
+  G4VisAttributes magenta(G4Colour::Magenta());
+  G4VisAttributes cyan(G4Colour::Cyan());
+
+  worldLV->SetVisAttributes(invisible);
+  baseshieldLV->SetVisAttributes(red);
+  bodyshieldLV->SetVisAttributes(red);
+  doorshieldLV->SetVisAttributes(magenta);
+  detLV->SetVisAttributes(cyan);
+  detHolderLV->SetVisAttributes(blue);
+  endcapLV->SetVisAttributes(blue);
+  endcapTopLV->SetVisAttributes(blue);
+  srcLV->SetVisAttributes(yellow);
+  cylStandLV->SetVisAttributes(green);
+  cylSrcHolderLV->SetVisAttributes(green);
 
   return worldPV;
 }
@@ -231,7 +241,7 @@ void HPGeUKMSNDetectorConstruction::DefineCommands()
 
   auto& srcDistCmd = fMessenger->DeclareMethodWithUnit("baseDistance", "mm",
                        &HPGeUKMSNDetectorConstruction::SetSourceBaseDistance,
-                       "Distance from detector top to base of source (default mm).");
+                       "Distance from base of holder to base of source (default mm).");
   srcDistCmd.SetParameterName("distance", true);
   srcDistCmd.SetRange("distance>=0.");
   srcDistCmd.SetDefaultValue("180.");
