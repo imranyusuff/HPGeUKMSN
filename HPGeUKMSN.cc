@@ -6,6 +6,7 @@
 #include "HPGeUKMSNDetectorConstruction.hh"
 #include "HPGeUKMSNActionInitialization.hh"
 #include "QGSP_BERT.hh"
+#include "G4RadioactiveDecayPhysics.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -31,6 +32,7 @@ int main(int argc, char *argv[])
 
   G4VModularPhysicsList *physicsList = new QGSP_BERT;
   physicsList->SetVerboseLevel(1);
+  physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics);
   runManager->SetUserInitialization(physicsList);
 
   runManager->SetUserInitialization(new HPGeUKMSNActionInitialization);

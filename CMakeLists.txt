@@ -48,6 +48,8 @@ set(HPGE_SCRIPTS
   init_vis.mac
   run1.mac
 #  run2.mac
+  run1_e444.mac
+  run_Co60.mac
   vis.mac
   )
 

@@ -1,0 +1,8 @@
+/run/initialize
+/control/verbose 2
+/run/verbose 2
+/gun/energy 0
+/gun/particle ion
+/gun/ion 27 60
+/run/beamOn 1000000
+
