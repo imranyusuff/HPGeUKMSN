@@ -37,8 +37,10 @@ void HPGeUKMSNRunAction::BeginOfRunAction(const G4Run * /* run */)
 }
 
 
-void HPGeUKMSNRunAction::EndOfRunAction(const G4Run * /* run */)
+void HPGeUKMSNRunAction::EndOfRunAction(const G4Run *run)
 {
+  const G4int runID = run->GetRunID();
+  G4cout << "Run " << runID << " finished." << G4endl;
   auto analysisManager = G4AnalysisManager::Instance();
   analysisManager->Write();
   analysisManager->CloseFile();
