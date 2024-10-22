@@ -25,6 +25,8 @@ class HPGeUKMSNEventAction : public G4UserEventAction
 
     G4double fEdep;
     G4int fDetHCID;
+    G4int fEventEdepPrintCount;
+    G4int fEventEdepPrintCountMax;
 };
 
 

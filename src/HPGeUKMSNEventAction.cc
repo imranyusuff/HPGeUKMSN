@@ -18,7 +18,9 @@ HPGeUKMSNEventAction::HPGeUKMSNEventAction(HPGeUKMSNRunAction *runAction)
  : G4UserEventAction(),
    fRunAction(runAction),
    fEdep(0.),
-   fDetHCID(-1)
+   fDetHCID(-1),
+   fEventEdepPrintCount(0),
+   fEventEdepPrintCountMax(100)
 {}
 
 
@@ -75,10 +77,16 @@ void HPGeUKMSNEventAction::EndOfEventAction(const G4Event *event)
 
   // if verbose then print total deposit and find if there are any positrons
   //if (verboseLevel > 1) {
-  const G4int evtID = event->GetEventID();
-  if (evtID < 100) {
+  if (totalEdep > 0. && fEventEdepPrintCount < fEventEdepPrintCountMax) {
+    const G4int evtID = event->GetEventID();
+
     // print total deposit
     G4cout << "Event " << evtID << " total energy deposit = " << G4BestUnit(totalEdep, "Energy") << G4endl;
+    fEventEdepPrintCount++;
+
+    if (fEventEdepPrintCount == fEventEdepPrintCountMax) {
+      G4cout << "Maximum event count reached for total energy deposit info." << G4endl;
+    }
 
     // detect and inform if event has positron
     G4TrajectoryContainer *trajs = event->GetTrajectoryContainer();
