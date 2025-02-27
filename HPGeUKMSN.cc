@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     ui = new G4UIExecutive(argc, argv);
   }
 
+  const G4int geometrySelection = 0; //TODO get this from commandline arg
+
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   theSeed = time(NULL);
   G4Random::setTheSeed(theSeed);
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
 
   G4RunManager *runManager = new G4RunManager;
 
-  runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction);
+  runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction(geometrySelection));
 
   G4VModularPhysicsList *physicsList = new QGSP_BERT;
   physicsList->SetVerboseLevel(1);

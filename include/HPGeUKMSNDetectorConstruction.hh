@@ -13,7 +13,7 @@ class G4Material;
 class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    HPGeUKMSNDetectorConstruction();
+    HPGeUKMSNDetectorConstruction(G4int geometrySelection);
     virtual ~HPGeUKMSNDetectorConstruction();
 
     virtual G4VPhysicalVolume *Construct();
@@ -25,7 +25,16 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
   private:
     void DefineMaterials();
     G4VPhysicalVolume *DefineVolumes();
+
+    void DefineExperimentGeometry0(
+      G4LogicalVolume * const worldLV,
+      const double baseShieldThickness,
+      const double endcapHeight,
+      const double endcapTopThickness);
+
     void DefineCommands();
+
+    G4int fGeometrySelection;
 
     G4GenericMessenger* fMessenger;
 

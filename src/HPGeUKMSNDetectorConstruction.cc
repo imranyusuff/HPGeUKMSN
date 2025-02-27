@@ -21,8 +21,9 @@
 #include "G4SystemOfUnits.hh"
 
 
-HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction()
+HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction(G4int geometrySelection)
 : G4VUserDetectorConstruction(),
+  fGeometrySelection(geometrySelection),
   fCheckOverlaps(true)
 {
   DefineCommands();
@@ -88,14 +89,6 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
 
   const double endcapTopThickness = 1.5*mm;
 
-  const double sourceRadius = 25.4*mm;
-  const double sourceHeight = 3.175*mm;
-
-  const double cylStandOuterRadius   = 70*mm;
-  const double cylStandThickness     = 3*mm;
-  const double cylStandHeight        = 270*mm;
-  const double cylSrcHolderThickness = 3*mm;
-
   G4Material *air = G4Material::GetMaterial("G4_AIR");
 
   //G4GeometryManager::GetInstance()->SetWorldMaximumExtent(20*cm);
@@ -160,6 +153,49 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4Transform3D endcapTopTR = G4Transform3D(endcapTopRM, endcapTop3V);
   G4VPhysicalVolume *endcapTopPV = new G4PVPlacement(endcapTopTR, endcapTopLV, "EndcapTop", worldLV, false, 0, fCheckOverlaps);
 
+  if (fGeometrySelection == 0) {
+    DefineExperimentGeometry0(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness);
+  }
+  else {
+    G4cout << "Geometry selection error." << G4endl;
+    exit(1);    // TODO this is too harsh
+  }
+
+  G4VisAttributes invisible(G4VisAttributes::GetInvisible());
+  G4VisAttributes red(G4Colour::Red());
+  G4VisAttributes green(G4Colour::Green());
+  G4VisAttributes blue(G4Colour::Blue());
+  G4VisAttributes yellow(G4Colour::Yellow());
+  G4VisAttributes magenta(G4Colour::Magenta());
+  G4VisAttributes cyan(G4Colour::Cyan());
+
+  worldLV->SetVisAttributes(invisible);
+  baseshieldLV->SetVisAttributes(red);
+  bodyshieldLV->SetVisAttributes(red);
+  doorshieldLV->SetVisAttributes(magenta);
+  detLV->SetVisAttributes(cyan);
+  detHolderLV->SetVisAttributes(blue);
+  endcapLV->SetVisAttributes(blue);
+  endcapTopLV->SetVisAttributes(blue);
+
+  return worldPV;
+}
+
+
+void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry0(
+  G4LogicalVolume * const worldLV,
+  const double baseShieldThickness,
+  const double endcapHeight,
+  const double endcapTopThickness)
+{
+  const double sourceRadius = 25.4*mm;
+  const double sourceHeight = 3.175*mm;
+
+  const double cylStandOuterRadius   = 70*mm;
+  const double cylStandThickness     = 3*mm;
+  const double cylStandHeight        = 270*mm;
+  const double cylSrcHolderThickness = 3*mm;
+
   G4Tubs *srcS = new G4Tubs("source", 0, sourceRadius, sourceHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
   G4RotationMatrix srcRM = G4RotationMatrix();
@@ -184,27 +220,12 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4Transform3D cylSrcHolderTR = G4Transform3D(cylSrcHolderRM, cylSrcHolder3V);
   fCylSrcHolderPV = new G4PVPlacement(cylSrcHolderTR, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
-  G4VisAttributes invisible(G4VisAttributes::GetInvisible());
-  G4VisAttributes red(G4Colour::Red());
-  G4VisAttributes green(G4Colour::Green());
-  G4VisAttributes blue(G4Colour::Blue());
   G4VisAttributes yellow(G4Colour::Yellow());
-  G4VisAttributes magenta(G4Colour::Magenta());
-  G4VisAttributes cyan(G4Colour::Cyan());
+  G4VisAttributes green(G4Colour::Green());
 
-  worldLV->SetVisAttributes(invisible);
-  baseshieldLV->SetVisAttributes(red);
-  bodyshieldLV->SetVisAttributes(red);
-  doorshieldLV->SetVisAttributes(magenta);
-  detLV->SetVisAttributes(cyan);
-  detHolderLV->SetVisAttributes(blue);
-  endcapLV->SetVisAttributes(blue);
-  endcapTopLV->SetVisAttributes(blue);
   srcLV->SetVisAttributes(yellow);
   cylStandLV->SetVisAttributes(green);
   cylSrcHolderLV->SetVisAttributes(green);
-
-  return worldPV;
 }
 
 
