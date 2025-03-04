@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     ui = new G4UIExecutive(argc, argv);
   }
 
-  const G4int geometrySelection = 0; //TODO get this from commandline arg
+  const G4int geometrySelection = 1; //TODO get this from commandline arg
 
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   theSeed = time(NULL);

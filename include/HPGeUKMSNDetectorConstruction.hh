@@ -30,7 +30,13 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
       G4LogicalVolume * const worldLV,
       const double baseShieldThickness,
       const double endcapHeight,
-      const double endcapTopThickness);
+      const double endcapTopThickness
+    );
+
+    void DefineExperimentGeometry1(
+      G4LogicalVolume * const worldLV,
+      const double baseShieldThickness
+    );
 
     void DefineCommands();
 

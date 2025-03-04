@@ -156,6 +156,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   if (fGeometrySelection == 0) {
     DefineExperimentGeometry0(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness);
   }
+  else if (fGeometrySelection == 1) {
+    DefineExperimentGeometry1(worldLV, baseShieldThickness);
+  }
   else {
     G4cout << "Geometry selection error." << G4endl;
     exit(1);    // TODO this is too harsh
@@ -226,6 +229,45 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry0(
   srcLV->SetVisAttributes(yellow);
   cylStandLV->SetVisAttributes(green);
   cylSrcHolderLV->SetVisAttributes(green);
+}
+
+
+void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
+  G4LogicalVolume * const worldLV,
+  const double baseShieldThickness
+)
+{
+  const double sourceRadius = 25.4*mm;
+  const double sourceHeight = 3.175*mm;
+
+  const double cubStandLength        = 150*mm;
+  const double cubStandThickness     = 3*mm;
+  const double cubStandHeight        = 270*mm;
+  const double cubSrcHolderThickness = 3*mm;
+
+  fSrcBaseDistance = 270*mm;
+
+  G4Tubs *srcS = new G4Tubs("source", 0, sourceRadius, sourceHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
+  G4RotationMatrix srcRM = G4RotationMatrix();
+  srcRM.rotateX(90.*deg);
+  G4ThreeVector src3V = G4ThreeVector(0, (baseShieldThickness + fSrcBaseDistance + sourceHeight/2), 0);
+  G4Transform3D srcTR = G4Transform3D(srcRM, src3V);
+  fSrcPV = new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
+
+  G4Box *cubStandExteriorS = new G4Box("cubStandExterior", cubStandLength/2, cubStandLength/2, cubStandHeight/2);
+  G4LogicalVolume *cubStandLV = new G4LogicalVolume(cubStandExteriorS, fStandMaterial, "CubicalStand");
+  G4RotationMatrix cubStandRM = G4RotationMatrix();
+  cubStandRM.rotateX(90.*deg);
+  G4ThreeVector cubStand3V = G4ThreeVector(0, baseShieldThickness + cubStandHeight/2, 0);
+  G4Transform3D cubStandTR = G4Transform3D(cubStandRM, cubStand3V);
+  new G4PVPlacement(cubStandTR, cubStandLV, "CubicalStand", worldLV, false, 0, fCheckOverlaps);
+
+  G4VisAttributes yellow(G4Colour::Yellow());
+  G4VisAttributes green(G4Colour::Green());
+
+  srcLV->SetVisAttributes(yellow);
+  cubStandLV->SetVisAttributes(green);
 }
 
 
