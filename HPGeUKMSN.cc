@@ -16,12 +16,24 @@ long theSeed;
 
 int main(int argc, char *argv[])
 {
-  G4UIExecutive *ui = 0;
-  if (argc == 1) {
-    ui = new G4UIExecutive(argc, argv);
+  G4int geometrySelection = 0;
+
+  int opt;
+  while ((opt = getopt(argc, argv, "g:")) != -1) {
+    switch(opt) {
+    case 'g':
+      geometrySelection = atoi(optarg);
+      break;
+    default:
+      G4cerr << "Usage: " << argv[0] << " [-g geom#] <other args for Geant4...>" << G4endl;
+      return 1;
+    }
   }
 
-  const G4int geometrySelection = 1; //TODO get this from commandline arg
+  G4UIExecutive *ui = 0;
+  if (argc == optind) {
+    ui = new G4UIExecutive(argc, argv);
+  }
 
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   theSeed = time(NULL);
@@ -46,7 +58,7 @@ int main(int argc, char *argv[])
 
   if (!ui) {
     G4String command = "/control/execute ";
-    G4String fileName = argv[1];
+    G4String fileName = argv[optind];
     UImanager->ApplyCommand(command + fileName);
   }
   else {
