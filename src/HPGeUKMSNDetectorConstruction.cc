@@ -240,10 +240,11 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
   const double sourceRadius = 25.4*mm;
   const double sourceHeight = 3.175*mm;
 
+  const double cubSrcHolderThickness = 3*mm;
+
   const double cubStandLength        = 150*mm;
   const double cubStandThickness     = 3*mm;
-  const double cubStandHeight        = 270*mm;
-  const double cubSrcHolderThickness = 3*mm;
+  const double cubStandHeight        = 270*mm - cubSrcHolderThickness;
 
   fSrcBaseDistance = 270*mm;
 
@@ -255,19 +256,38 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
   G4Transform3D srcTR = G4Transform3D(srcRM, src3V);
   fSrcPV = new G4PVPlacement(srcTR, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
-  G4Box *cubStandExteriorS = new G4Box("cubStandExterior", cubStandLength/2, cubStandLength/2, cubStandHeight/2);
-  G4LogicalVolume *cubStandLV = new G4LogicalVolume(cubStandExteriorS, fStandMaterial, "CubicalStand");
-  G4RotationMatrix cubStandRM = G4RotationMatrix();
-  cubStandRM.rotateX(90.*deg);
-  G4ThreeVector cubStand3V = G4ThreeVector(0, baseShieldThickness + cubStandHeight/2, 0);
-  G4Transform3D cubStandTR = G4Transform3D(cubStandRM, cubStand3V);
-  new G4PVPlacement(cubStandTR, cubStandLV, "CubicalStand", worldLV, false, 0, fCheckOverlaps);
+  G4Box *cubStandSideS = new G4Box("cubStandSide", cubStandThickness/2, cubStandLength/2, cubStandHeight/2); //for both sides
+
+  G4LogicalVolume *cubStandSide1LV = new G4LogicalVolume(cubStandSideS, fStandMaterial, "CubicalStandSide1");
+  G4RotationMatrix cubStandSide1RM = G4RotationMatrix();
+  cubStandSide1RM.rotateX(90.*deg);
+  G4ThreeVector cubStandSide13V = G4ThreeVector(cubStandLength/2 - cubStandThickness/2, baseShieldThickness + cubStandHeight/2, 0);
+  G4Transform3D cubStandSide1TR = G4Transform3D(cubStandSide1RM, cubStandSide13V);
+  new G4PVPlacement(cubStandSide1TR, cubStandSide1LV, "CubicalStandSide1",  worldLV, false, 0, fCheckOverlaps);
+
+  G4LogicalVolume *cubStandSide2LV = new G4LogicalVolume(cubStandSideS, fStandMaterial, "CubicalStandSide2");
+  G4RotationMatrix cubStandSide2RM = G4RotationMatrix();
+  cubStandSide2RM.rotateX(90.*deg);
+  G4ThreeVector cubStandSide23V = G4ThreeVector(-(cubStandLength/2 - cubStandThickness/2), baseShieldThickness + cubStandHeight/2, 0);
+  G4Transform3D cubStandSide2TR = G4Transform3D(cubStandSide2RM, cubStandSide23V);
+  new G4PVPlacement(cubStandSide2TR, cubStandSide2LV, "CubicalStandSide2",  worldLV, false, 0, fCheckOverlaps);
+
+  G4Box *cubSrcHolderS = new G4Box("cubSrcHolder", cubStandLength/2, cubStandLength/2, cubSrcHolderThickness/2);
+  G4LogicalVolume *cubSrcHolderLV = new G4LogicalVolume(cubSrcHolderS, fStandMaterial, "CubStandSrcHolder");
+  G4RotationMatrix cubSrcHolderRM = G4RotationMatrix();
+  cubSrcHolderRM.rotateX(90.*deg);
+  G4ThreeVector cubSrcHolder3V = G4ThreeVector(0, baseShieldThickness + cubStandHeight + cubStandThickness/2, 0);
+  G4Transform3D cubSrcHolderTR = G4Transform3D(cubSrcHolderRM, cubSrcHolder3V);
+  new G4PVPlacement(cubSrcHolderTR, cubSrcHolderLV, "CubStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
   G4VisAttributes yellow(G4Colour::Yellow());
   G4VisAttributes green(G4Colour::Green());
 
   srcLV->SetVisAttributes(yellow);
-  cubStandLV->SetVisAttributes(green);
+  //cubStandLV->SetVisAttributes(green);
+  cubStandSide1LV->SetVisAttributes(green);
+  cubStandSide2LV->SetVisAttributes(green);
+  cubSrcHolderLV->SetVisAttributes(green);
 }
 
 
