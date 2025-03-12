@@ -170,10 +170,10 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry0(
   const double endcapHeight,
   const double endcapTopThickness)
 {
-  const double sourceRadius = 25.4*mm;
+  const double sourceRadius = 25.4*mm/2;
   const double sourceHeight = 3.175*mm;
 
-  const double cylStandOuterRadius   = 70*mm;
+  const double cylStandOuterRadius   = 35*mm;
   const double cylStandThickness     = 3*mm;
   const double cylStandHeight        = 270*mm;
   const double cylSrcHolderThickness = 3*mm;
@@ -209,7 +209,7 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
 {
   fSrcBaseDistance = 315*mm;
 
-  const double sourceRadius = 25.4*mm;
+  const double sourceRadius = 25.4*mm/2;
   const double sourceHeight = 3.175*mm;
 
   const double cubSrcHolderThickness = 3*mm;
@@ -291,6 +291,20 @@ void HPGeUKMSNDetectorConstruction::SetSourceBaseDistance(G4double distance)
 }
 
 
+void HPGeUKMSNDetectorConstruction::SetSourceXYPos(G4double x, G4double y)
+{
+  if (!fSrcPV) {
+      G4cerr << "Geometry has not yet been constructed." << G4endl;
+      return;
+  }
+
+  fSrcPV->SetTranslation(G4ThreeVector(x, y, fSrcPV->GetTranslation().z()));
+
+  // tell G4RunManager that we change the geometry
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+
 void HPGeUKMSNDetectorConstruction::DefineCommands()
 {
   fMessenger = new G4GenericMessenger(this, "/hpge/source/", "Source control");
@@ -301,5 +315,13 @@ void HPGeUKMSNDetectorConstruction::DefineCommands()
   srcDistCmd.SetParameterName("distance", true);
   srcDistCmd.SetRange("distance>=0.");
   srcDistCmd.SetDefaultValue("180.");
+
+  auto& srcXYPosCmd = fMessenger->DeclareMethod("posXY",
+                        &HPGeUKMSNDetectorConstruction::SetSourceXYPos,
+                        "x, y position of the source (in mm) (z unchanged).");
+  srcXYPosCmd.SetParameterName("x", true);
+  srcXYPosCmd.SetDefaultValue("0.");
+  srcXYPosCmd.SetParameterName("y", true);
+  srcXYPosCmd.SetDefaultValue("0.");
 }
 

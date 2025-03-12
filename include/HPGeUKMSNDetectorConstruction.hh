@@ -20,6 +20,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     virtual void ConstructSDandField();
 
     void SetSourceBaseDistance(G4double distance);
+    void SetSourceXYPos(G4double x, G4double y);
     G4double GetSourceBaseDistance() { return fSrcBaseDistance; }
 
   private:
