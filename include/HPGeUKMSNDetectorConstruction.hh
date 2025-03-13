@@ -55,6 +55,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
 
     G4VPhysicalVolume *fSrcPV;
     G4VPhysicalVolume *fCylSrcHolderPV;
+    G4VPhysicalVolume *fCylSrcHolderWallPV;
 
     G4bool fCheckOverlaps;
 

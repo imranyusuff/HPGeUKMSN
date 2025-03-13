@@ -178,6 +178,8 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry0(
   const double cylStandHeight        = 270*mm;
   const double cylSrcHolderThickness = 3*mm;
 
+  const double cylSrcHolderWallHeight = 20*mm;
+
   G4Tubs *srcS = new G4Tubs("source", 0, sourceRadius, sourceHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
   G4ThreeVector srcPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + sourceHeight/2));
@@ -188,17 +190,24 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry0(
   G4ThreeVector cylStandPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + cylStandHeight/2);
   new G4PVPlacement(nullptr, cylStandPos, cylStandLV, "CylindricalStand", worldLV, false, 0, fCheckOverlaps);
 
-  G4Tubs *cylSrcHolderS = new G4Tubs("cylSrcHolder", 0, cylStandOuterRadius - cylStandThickness, cylSrcHolderThickness/2, 0.*deg, 360.*deg);
+  G4Tubs *cylSrcHolderWallS = new G4Tubs("cylSrcHolderWall", cylStandOuterRadius - 2*cylStandThickness, cylStandOuterRadius - cylStandThickness, cylSrcHolderWallHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *cylSrcHolderWallLV = new G4LogicalVolume(cylSrcHolderWallS, fStandMaterial, "CylStandSrcHolderWall");
+  G4ThreeVector cylSrcHolderWallPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance - cylSrcHolderThickness + cylSrcHolderWallHeight/2);
+  fCylSrcHolderWallPV = new G4PVPlacement(nullptr, cylSrcHolderWallPos, cylSrcHolderWallLV, "CylStandSrcHolderWall", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *cylSrcHolderS = new G4Tubs("cylSrcHolder", 0, cylStandOuterRadius - 2*cylStandThickness, cylSrcHolderThickness/2, 0.*deg, 360.*deg);
   G4LogicalVolume *cylSrcHolderLV = new G4LogicalVolume(cylSrcHolderS, fStandMaterial, "CylStandSrcHolder");
   G4ThreeVector cylSrcHolderPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance - cylSrcHolderThickness/2);
   fCylSrcHolderPV = new G4PVPlacement(nullptr, cylSrcHolderPos, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
   G4VisAttributes yellow(G4Colour::Yellow());
   G4VisAttributes green(G4Colour::Green());
+  G4VisAttributes green2(G4Colour(0.1, 0.9, 0.5));
 
   srcLV->SetVisAttributes(yellow);
   cylStandLV->SetVisAttributes(green);
-  cylSrcHolderLV->SetVisAttributes(green);
+  cylSrcHolderWallLV->SetVisAttributes(green2);
+  cylSrcHolderLV->SetVisAttributes(green2);
 }
 
 
@@ -274,7 +283,7 @@ void HPGeUKMSNDetectorConstruction::ConstructSDandField()
 
 void HPGeUKMSNDetectorConstruction::SetSourceBaseDistance(G4double distance)
 {
-  if (!fSrcPV || !fCylSrcHolderPV) {
+  if (!fSrcPV || !fCylSrcHolderPV || !fCylSrcHolderWallPV) {
       G4cerr << "Detector has not yet been constructed." << G4endl;
       return;
   }
@@ -283,6 +292,8 @@ void HPGeUKMSNDetectorConstruction::SetSourceBaseDistance(G4double distance)
   fSrcBaseDistance = distance;
   fSrcPV->SetTranslation(G4ThreeVector(
     0, 0, fSrcPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  fCylSrcHolderWallPV->SetTranslation(G4ThreeVector(
+    0, 0, fCylSrcHolderWallPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
   fCylSrcHolderPV->SetTranslation(G4ThreeVector(
     0, 0, fCylSrcHolderPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
 
