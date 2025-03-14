@@ -260,8 +260,74 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
   G4ThreeVector cubSrcHolderPos = G4ThreeVector(0, 0, baseShieldThickness + cubStandHeight + cubSrcHolderThickness/2);
   new G4PVPlacement(nullptr, cubSrcHolderPos, cubSrcHolderLV, "CubStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
 
+  // The slots
+
+  const double cubSlotsLowerThick  = 5*mm;
+  const double cubSlotsLowerHeight = 5*mm;
+
+  const int cubNLowerSlots = 12;
+
+  const double cubSlotsLowerBase = 65*mm;
+  const double cubSlotsLowerInterval = 125*mm / cubNLowerSlots;
+
+  G4Box *cubSlotsLowerS = new G4Box("cubSlotsLower", cubSlotsLowerThick/2, cubStandLength/2, cubSlotsLowerHeight/2);
+
+  G4LogicalVolume *cubSlotsLowerLLV[cubNLowerSlots];
+  G4LogicalVolume *cubSlotsLowerRLV[cubNLowerSlots];
+
+  for (int i=0; i<cubNLowerSlots; i++) {
+    std::stringstream slotNameL;
+    slotNameL << "CubSlotLowerL" << i;
+    std::stringstream slotNameR;
+    slotNameR << "CubSlotLowerR" << i;
+    cubSlotsLowerLLV[i] = new G4LogicalVolume(cubSlotsLowerS, fStandMaterial, slotNameL.str());
+    cubSlotsLowerRLV[i] = new G4LogicalVolume(cubSlotsLowerS, fStandMaterial, slotNameR.str());
+    G4ThreeVector posL = G4ThreeVector(-(cubStandLength/2 - cubStandThickness - cubSlotsLowerThick/2), 0, baseShieldThickness + cubSlotsLowerBase + i*cubSlotsLowerInterval + cubSlotsLowerHeight/2);
+    G4ThreeVector posR = G4ThreeVector(cubStandLength/2 - cubStandThickness - cubSlotsLowerThick/2, 0, baseShieldThickness + cubSlotsLowerBase + i*cubSlotsLowerInterval + cubSlotsLowerHeight/2);
+    new G4PVPlacement(nullptr, posL, cubSlotsLowerLLV[i], slotNameL.str(), worldLV, false, 0, fCheckOverlaps);
+    new G4PVPlacement(nullptr, posR, cubSlotsLowerRLV[i], slotNameR.str(), worldLV, false, 0, fCheckOverlaps);
+  }
+
+  const double cubSlotsUpperThick  = 3*mm;
+  const double cubSlotsUpperHeight = 3*mm;
+
+  const int cubNUpperSlots = 12;
+
+  const double cubSlotsUpperBase = 190*mm;
+  const double cubSlotsUpperInterval = 10*mm;
+
+  G4Box *cubSlotsUpperS = new G4Box("cubSlotsUpper", cubSlotsUpperThick/2, cubStandLength/2, cubSlotsUpperHeight/2);
+
+  G4LogicalVolume *cubSlotsUpperLLV[cubNUpperSlots];
+  G4LogicalVolume *cubSlotsUpperRLV[cubNUpperSlots];
+
+  for (int i=0; i<cubNUpperSlots; i++) {
+    std::stringstream slotNameL;
+    slotNameL << "CubSlotUpperL" << i;
+    std::stringstream slotNameR;
+    slotNameR << "CubSlotUpperR" << i;
+    cubSlotsUpperLLV[i] = new G4LogicalVolume(cubSlotsUpperS, fStandMaterial, slotNameL.str());
+    cubSlotsUpperRLV[i] = new G4LogicalVolume(cubSlotsUpperS, fStandMaterial, slotNameR.str());
+    G4ThreeVector posL = G4ThreeVector(-(cubStandLength/2 - cubStandThickness - cubSlotsUpperThick/2), 0,
+                                       baseShieldThickness + cubSlotsUpperBase + i*cubSlotsUpperInterval + cubSlotsUpperHeight/2);
+    G4ThreeVector posR = G4ThreeVector(cubStandLength/2 - cubStandThickness - cubSlotsUpperThick/2, 0,
+                                       baseShieldThickness + cubSlotsUpperBase + i*cubSlotsUpperInterval + cubSlotsUpperHeight/2);
+    new G4PVPlacement(nullptr, posL, cubSlotsUpperLLV[i], slotNameL.str(), worldLV, false, 0, fCheckOverlaps);
+    new G4PVPlacement(nullptr, posR, cubSlotsUpperRLV[i], slotNameR.str(), worldLV, false, 0, fCheckOverlaps);
+  }
+
+  // Apparently we have bogus slot...
+
+  G4LogicalVolume *cubBogusSlotLV = new G4LogicalVolume(cubSlotsLowerS, fStandMaterial, "CubBogusSlot");
+  G4ThreeVector cubBogusSlotPos = G4ThreeVector(cubStandLength/2 - cubStandThickness - cubSlotsLowerThick/2, 0,
+                                                baseShieldThickness + cubSlotsLowerBase - cubSlotsLowerInterval + cubSlotsLowerHeight/2);
+  new G4PVPlacement(nullptr, cubBogusSlotPos, cubBogusSlotLV, "CubBogusSlot", worldLV, false, 0, fCheckOverlaps);
+
+  // Attributes
+
   G4VisAttributes yellow(G4Colour::Yellow());
   G4VisAttributes green(G4Colour::Green());
+  G4VisAttributes green2(G4Colour(0.1, 0.9, 0.5));
 
   srcLV->SetVisAttributes(yellow);
   //cubStandLV->SetVisAttributes(green);
@@ -270,6 +336,18 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
   cubStandBackLV->SetVisAttributes(green);
   cubStandBarLV->SetVisAttributes(green);
   cubSrcHolderLV->SetVisAttributes(green);
+
+  for (int i=0; i<cubNLowerSlots; i++) {
+    cubSlotsLowerLLV[i]->SetVisAttributes(green2);
+    cubSlotsLowerRLV[i]->SetVisAttributes(green2);
+  }
+
+  for (int i=0; i<cubNUpperSlots; i++) {
+    cubSlotsUpperLLV[i]->SetVisAttributes(green2);
+    cubSlotsUpperRLV[i]->SetVisAttributes(green2);
+  }
+
+  cubBogusSlotLV->SetVisAttributes(green2);
 }
 
 
