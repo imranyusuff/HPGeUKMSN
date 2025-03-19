@@ -79,11 +79,13 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
 
   const double detectorHolderInnerRadius = 29.5*mm;
   const double detectorHolderOuterRadius = 31.0*mm;
-  const double detectorHolderHeight = 202.4*mm;
+  //const double detectorHolderHeight = 202.4*mm;
+  const double detectorHolderHeight = 227.4*mm;
 
   const double endcapOuterRadius = (71.5*mm)/2;
   const double endcapThickness   =  1.5*mm;
-  const double endcapHeight      = 105*mm;  /* endcap + baseShield = 105 + 102.4 = 207.4 */
+  //const double endcapHeight      = 105*mm;  /* endcap + baseShield = 105 + 102.4 = 207.4 */
+  const double endcapHeight      = 130*mm;
 
   const double endcapTopThickness = 1.5*mm;
 
