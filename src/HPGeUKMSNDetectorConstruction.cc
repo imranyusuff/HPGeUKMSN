@@ -11,8 +11,6 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
-#include "G4RotationMatrix.hh"
-#include "G4Transform3D.hh"
 #include "G4PVPlacement.hh"
 
 #include "G4VisAttributes.hh"
@@ -216,7 +214,7 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
   const double baseShieldThickness
 )
 {
-  fSrcBaseDistance = 315*mm;
+  fSrcBaseDistance = 312*mm;
 
   const double sourceRadius = 25.4*mm/2;
   const double sourceHeight = 3.175*mm;
