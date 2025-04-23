@@ -61,6 +61,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fSrcMaterial;
     G4Material *fStandMaterial;
     G4Material *fContainerMaterial;
+    G4Material *fIAEA375SoilMaterial;
 
     G4VPhysicalVolume *fSrcPV;
     G4VPhysicalVolume *fCylSrcHolderPV;

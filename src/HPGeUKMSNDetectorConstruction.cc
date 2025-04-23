@@ -53,6 +53,18 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fStandMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fContainerMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
+
+  // IAEA-375 standard calibration soil material
+  fIAEA375SoilMaterial = new G4Material("IAEA375Soil", 1.55 * g/cm3, 8);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Si"), 0.526);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Al"), 0.180);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Fe"), 0.120);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ca"), 0.075);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("K"),  0.045);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mg"), 0.023);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ti"), 0.015);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Na"), 0.015);
+
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
@@ -373,6 +385,8 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   const double containerHeight = (variant == 2) ? 65.*mm : (variant == 1) ? 44.*mm : 100.*mm;
   const double containerDiameter = (variant == 2) ? 55.*mm : (variant == 1) ? 70.*mm : 65.*mm;
 
+  const double sourceHeight = (variant == 2) ? 42.*mm : (variant == 1) ? 20.*mm : 75.*mm;
+
   G4Tubs *containerSideS = new G4Tubs("containerSide", containerDiameter/2 - containerThickness, containerDiameter/2, containerHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *containerSideLV = new G4LogicalVolume(containerSideS, fContainerMaterial, "ContainerSide");
   G4ThreeVector containerSidePos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight/2));
@@ -388,11 +402,19 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   G4ThreeVector containerTopPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight - containerThickness/2));
   new G4PVPlacement(nullptr, containerTopPos, containerTopLV, "ContainerTop", worldLV, false, 0, fCheckOverlaps);
 
-  G4VisAttributes gray(G4Colour::Gray());
+  // The IAEA-375 soil is the source
+  G4Tubs *srcS = new G4Tubs("source", 0, containerDiameter/2 - containerThickness, sourceHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fIAEA375SoilMaterial, "Source");
+  G4ThreeVector srcPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness + sourceHeight/2));
+  fSrcPV = new G4PVPlacement(nullptr, srcPos, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
-  containerSideLV->SetVisAttributes(gray);
-  containerBaseLV->SetVisAttributes(gray);
-  containerTopLV->SetVisAttributes(gray);
+  G4VisAttributes grey(G4Colour::Grey());
+  G4VisAttributes brown(G4Colour::Brown());
+
+  containerSideLV->SetVisAttributes(grey);
+  containerBaseLV->SetVisAttributes(grey);
+  containerTopLV->SetVisAttributes(grey);
+  srcLV->SetVisAttributes(brown);
 }
 
 
