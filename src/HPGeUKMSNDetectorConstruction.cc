@@ -52,6 +52,7 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fStopMaterial = nistManager->FindOrBuildMaterial("G4_Pb");
   fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fStandMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
+  fContainerMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
@@ -137,6 +138,15 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   }
   else if (fGeometrySelection == 1) {
     DefineExperimentGeometry1(worldLV, baseShieldThickness);
+  }
+  else if (fGeometrySelection == 2 || fGeometrySelection == 2000) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0);
+  }
+  else if (fGeometrySelection == 2001) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1);
+  }
+  else if (fGeometrySelection == 2002) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2);
   }
   else {
     G4cout << "Geometry selection error." << G4endl;
@@ -348,6 +358,41 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry1(
   }
 
   cubBogusSlotLV->SetVisAttributes(green2);
+}
+
+
+void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
+  G4LogicalVolume * const worldLV,
+  const double baseShieldThickness,
+  const double endcapHeight,
+  const double endcapTopThickness,
+  const int variant)
+{
+  const double containerThickness = 1.*mm;
+
+  const double containerHeight = (variant == 2) ? 65.*mm : (variant == 1) ? 44.*mm : 100.*mm;
+  const double containerDiameter = (variant == 2) ? 55.*mm : (variant == 1) ? 70.*mm : 65.*mm;
+
+  G4Tubs *containerSideS = new G4Tubs("containerSide", containerDiameter/2 - containerThickness, containerDiameter/2, containerHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *containerSideLV = new G4LogicalVolume(containerSideS, fContainerMaterial, "ContainerSide");
+  G4ThreeVector containerSidePos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight/2));
+  new G4PVPlacement(nullptr, containerSidePos, containerSideLV, "ContainerSide", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *containerBaseS = new G4Tubs("containerBase", 0, containerDiameter/2 - containerThickness, containerThickness/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *containerBaseLV = new G4LogicalVolume(containerBaseS, fContainerMaterial, "ContainerBase");
+  G4ThreeVector containerBasePos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness/2));
+  new G4PVPlacement(nullptr, containerBasePos, containerBaseLV, "ContainerBase", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *containerTopS = new G4Tubs("containerTop", 0, containerDiameter/2 - containerThickness, containerThickness/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *containerTopLV = new G4LogicalVolume(containerTopS, fContainerMaterial, "ContainerTop");
+  G4ThreeVector containerTopPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight - containerThickness/2));
+  new G4PVPlacement(nullptr, containerTopPos, containerTopLV, "ContainerTop", worldLV, false, 0, fCheckOverlaps);
+
+  G4VisAttributes gray(G4Colour::Gray());
+
+  containerSideLV->SetVisAttributes(gray);
+  containerBaseLV->SetVisAttributes(gray);
+  containerTopLV->SetVisAttributes(gray);
 }
 
 

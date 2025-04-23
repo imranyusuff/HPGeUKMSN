@@ -39,6 +39,14 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
       const double baseShieldThickness
     );
 
+    void DefineExperimentGeometry2(
+      G4LogicalVolume * const worldLV,
+      const double baseShieldThickness,
+      const double endcapHeight,
+      const double endcapTopThickness,
+      const int variant
+    );
+
     void DefineCommands();
 
     G4int fGeometrySelection;
@@ -52,6 +60,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fStopMaterial;
     G4Material *fSrcMaterial;
     G4Material *fStandMaterial;
+    G4Material *fContainerMaterial;
 
     G4VPhysicalVolume *fSrcPV;
     G4VPhysicalVolume *fCylSrcHolderPV;
