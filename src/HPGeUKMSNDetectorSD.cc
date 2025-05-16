@@ -27,7 +27,7 @@ void HPGeUKMSNDetectorSD::Initialize(G4HCofThisEvent *hce)
 
 G4bool HPGeUKMSNDetectorSD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 {
-  const G4double threshold = 30.*CLHEP::keV;       // HPGe detection threshold
+  const G4double threshold = 0.*CLHEP::keV;       // HPGe detection threshold (disable for now)
   G4double edep = aStep->GetTotalEnergyDeposit();
   if (edep < threshold) return false;       // No hit creation below threshold
   HPGeUKMSNDetectorHit *newHit = new HPGeUKMSNDetectorHit();
