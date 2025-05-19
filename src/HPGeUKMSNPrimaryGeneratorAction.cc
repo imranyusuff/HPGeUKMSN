@@ -12,8 +12,9 @@
 #include "Randomize.hh"
 
 
-HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction()
- : G4VUserPrimaryGeneratorAction()
+HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction(G4int geometrySelection)
+ : G4VUserPrimaryGeneratorAction(),
+   fGeometrySelection(geometrySelection)
 {
   G4int nParticles = 1;
   fParticleGun = new G4ParticleGun(nParticles);
@@ -46,17 +47,23 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
   // Generate gamma ray photon uniformly and randomly within source
   G4VPhysicalVolume *srcPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("Source");
   const G4ThreeVector src3V = srcPV->GetObjectTranslation();
-  //G4LogicalVolume *srcLV = srcPV->GetLogicalVolume();
-  //G4Tubs *srcS = dynamic_cast<G4Tubs *>(srcLV->GetSolid());
-  //G4double srcRadius = srcS->GetOuterRadius();
-  //G4double srcZov2 = srcS->GetZHalfLength();
-  //G4double genTheta = 2. * CLHEP::pi * G4UniformRand();
-  //G4double genR = std::sqrt(G4UniformRand()) * srcRadius;
-  //genX = genR * std::cos(genTheta);
-  //genY = genR * std::sin(genTheta);
-  //genZ = 2. * G4UniformRand() * srcZov2 - srcZov2;
-  //const G4ThreeVector genPos = src3V + G4ThreeVector(genX, genY, genZ);
-  const G4ThreeVector genPos = src3V;
+  G4ThreeVector displacement;
+  if (fGeometrySelection == 2 ||
+      fGeometrySelection == 2000 ||
+      fGeometrySelection == 2001 ||
+      fGeometrySelection == 2002) {
+    G4LogicalVolume *srcLV = srcPV->GetLogicalVolume();
+    G4Tubs *srcS = dynamic_cast<G4Tubs *>(srcLV->GetSolid());
+    G4double srcRadius = srcS->GetOuterRadius();
+    G4double srcZov2 = srcS->GetZHalfLength();
+    G4double genTheta = 2. * CLHEP::pi * G4UniformRand();
+    G4double genR = std::sqrt(G4UniformRand()) * srcRadius;
+    genX = genR * std::cos(genTheta);
+    genY = genR * std::sin(genTheta);
+    genZ = 2. * G4UniformRand() * srcZov2 - srcZov2;
+    displacement.set(genX, genY, genZ);
+  }
+  const G4ThreeVector genPos = src3V + displacement;
   fParticleGun->SetParticlePosition(genPos);
 
   // Now generate the gamma ray photon

@@ -4,8 +4,9 @@
 #include "HPGeUKMSNPrimaryGeneratorAction.hh"
 
 
-HPGeUKMSNActionInitialization::HPGeUKMSNActionInitialization()
- : G4VUserActionInitialization()
+HPGeUKMSNActionInitialization::HPGeUKMSNActionInitialization(G4int geometrySelection)
+ : G4VUserActionInitialization(),
+   fGeometrySelection(geometrySelection)
 {}
 
 
@@ -19,6 +20,6 @@ void HPGeUKMSNActionInitialization::Build() const
   SetUserAction(runAction);
 
   SetUserAction(new HPGeUKMSNEventAction(runAction));
-  SetUserAction(new HPGeUKMSNPrimaryGeneratorAction);
+  SetUserAction(new HPGeUKMSNPrimaryGeneratorAction(fGeometrySelection));
 }
 

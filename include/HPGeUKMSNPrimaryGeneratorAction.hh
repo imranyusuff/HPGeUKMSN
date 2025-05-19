@@ -2,6 +2,7 @@
 #define HPGeUKMSNPrimaryGeneratorAction_h 1
 
 #include "G4VUserPrimaryGeneratorAction.hh"
+#include "G4Types.hh"
 
 
 class G4ParticleGun;
@@ -11,7 +12,7 @@ class G4Event;
 class HPGeUKMSNPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
-    HPGeUKMSNPrimaryGeneratorAction();
+    HPGeUKMSNPrimaryGeneratorAction(G4int geometrySelection);
     virtual ~HPGeUKMSNPrimaryGeneratorAction();
 
     virtual void GeneratePrimaries(G4Event *);
@@ -20,6 +21,7 @@ class HPGeUKMSNPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
   private:
     G4ParticleGun *fParticleGun;
+    G4int          fGeometrySelection;
 };
 
 

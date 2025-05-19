@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics);
   runManager->SetUserInitialization(physicsList);
 
-  runManager->SetUserInitialization(new HPGeUKMSNActionInitialization);
+  runManager->SetUserInitialization(new HPGeUKMSNActionInitialization(geometrySelection));
 
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();
