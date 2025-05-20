@@ -88,6 +88,7 @@ void HPGeUKMSNEventAction::EndOfEventAction(const G4Event *event)
       G4cout << "Maximum event count reached for total energy deposit info." << G4endl;
     }
 
+    /* (no need for now)
     // detect and inform if event has positron
     G4TrajectoryContainer *trajs = event->GetTrajectoryContainer();
     if (trajs) {
@@ -100,6 +101,7 @@ void HPGeUKMSNEventAction::EndOfEventAction(const G4Event *event)
         }
       }
     }
+    */
   }
 }
 
