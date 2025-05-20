@@ -44,9 +44,10 @@ HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction(G4int geometryS
       fIAEA375IsotopesSumI += activity;
       fIAEA375IsotopesC.push_back(fIAEA375IsotopesSumI);
     }
-    // normalize cumulatives
+    // normalize cumulatives, also find probabilities (TODO: cumulatives not needed?)
     for (unsigned int i = 0; i < fIAEA375IsotopesC.size(); ++i) {
       fIAEA375IsotopesC[i] /= fIAEA375IsotopesSumI;
+      fIAEA375IsotopesP.push_back(fIAEA375IsotopesI[i]/fIAEA375IsotopesSumI);
     }
   }
 }
@@ -69,9 +70,9 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     G4double rand = G4UniformRand();
     G4ParticleDefinition* ion = nullptr;
     // pick which isotope will decay
-    const int iMax = fIAEA375IsotopesC.size() - 1;
+    const int iMax = fIAEA375IsotopesP.size() - 1;
     int iDecay = -1;
-    do rand -= fIAEA375IsotopesC[++iDecay];
+    do rand -= fIAEA375IsotopesP[++iDecay];
     while (rand > 0. && iDecay < iMax);
     ion = ionTable->GetIon(fIAEA375IsotopesZ[iDecay], fIAEA375IsotopesA[iDecay], 0.0);
     fParticleGun->SetParticleDefinition(ion);

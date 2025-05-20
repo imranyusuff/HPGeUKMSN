@@ -28,6 +28,7 @@ class HPGeUKMSNPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     std::vector<G4int> fIAEA375IsotopesA;
     std::vector<G4double> fIAEA375IsotopesI;
     std::vector<G4double> fIAEA375IsotopesC;
+    std::vector<G4double> fIAEA375IsotopesP;
     G4double fIAEA375IsotopesSumI;
 };
 
