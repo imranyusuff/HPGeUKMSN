@@ -5,6 +5,9 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4IonTable.hh"
+#include "G4RadioactiveDecay.hh"
+#include "G4ProcessTable.hh"
+#include "G4NucleusLimits.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4VPhysicalVolume.hh"
@@ -74,9 +77,22 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     int iDecay = -1;
     do rand -= fIAEA375IsotopesP[++iDecay];
     while (rand > 0. && iDecay < iMax);
-    ion = ionTable->GetIon(fIAEA375IsotopesZ[iDecay], fIAEA375IsotopesA[iDecay], 0.0);
+    const G4int A = fIAEA375IsotopesA[iDecay];
+    const G4int Z = fIAEA375IsotopesZ[iDecay];
+    ion = ionTable->GetIon(Z, A, 0.0);
     fParticleGun->SetParticleDefinition(ion);
     fParticleGun->SetParticleEnergy(0.0);  // Energy is ignored for decaying ions
+    // disable decay chain
+    auto radioactiveDecay =
+      static_cast<G4RadioactiveDecay*>(G4ProcessTable::GetProcessTable()->FindProcess("Radioactivation", "GenericIon"));
+    //  static_cast<G4RadioactiveDecay*>(G4ProcessTable::GetProcessTable()->FindProcess("RadioactiveDecay", "GenericIon"));
+    if (radioactiveDecay) {
+      G4NucleusLimits nucleusLimits(A, A, Z, Z);
+      radioactiveDecay->SetNucleusLimits(nucleusLimits);
+    }
+    else {
+      G4cout << "WARNING: CANNOT GET THE RADIOACTIVE DECAY PROCESS!" << G4endl;
+    }
   }
 
   // Isotropic gamma ray photon direction
