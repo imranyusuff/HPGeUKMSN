@@ -152,13 +152,22 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
     DefineExperimentGeometry1(worldLV, baseShieldThickness);
   }
   else if (fGeometrySelection == 2 || fGeometrySelection == 2000) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, false);
   }
   else if (fGeometrySelection == 2001) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, false);
   }
   else if (fGeometrySelection == 2002) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, false);
+  }
+  else if (fGeometrySelection == 3 || fGeometrySelection == 3000) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, true);
+  }
+  else if (fGeometrySelection == 3001) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, true);
+  }
+  else if (fGeometrySelection == 3002) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true);
   }
   else {
     G4cout << "Geometry selection error." << G4endl;
@@ -378,14 +387,19 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   const double baseShieldThickness,
   const double endcapHeight,
   const double endcapTopThickness,
-  const int variant)
+  const int variant,
+  const bool pointSourceOnTop)
 {
   const double containerThickness = 1.*mm;
 
   const double containerHeight = (variant == 2) ? 65.*mm : (variant == 1) ? 44.*mm : 100.*mm;
   const double containerDiameter = (variant == 2) ? 55.*mm : (variant == 1) ? 70.*mm : 65.*mm;
 
-  const double sourceHeight = (variant == 2) ? 42.*mm : (variant == 1) ? 20.*mm : 75.*mm;
+  const double soilHeight = (variant == 2) ? 42.*mm : (variant == 1) ? 20.*mm : 75.*mm;
+
+  // for point source on top if requested
+  const double sourceRadius = 25.4*mm/2;
+  const double sourceHeight = 3.175*mm;
 
   G4Tubs *containerSideS = new G4Tubs("containerSide", containerDiameter/2 - containerThickness, containerDiameter/2, containerHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *containerSideLV = new G4LogicalVolume(containerSideS, fContainerMaterial, "ContainerSide");
@@ -402,11 +416,12 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   G4ThreeVector containerTopPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight - containerThickness/2));
   new G4PVPlacement(nullptr, containerTopPos, containerTopLV, "ContainerTop", worldLV, false, 0, fCheckOverlaps);
 
-  // The IAEA-375 soil is the source
-  G4Tubs *srcS = new G4Tubs("source", 0, containerDiameter/2 - containerThickness, sourceHeight/2, 0.*deg, 360.*deg);
-  G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fIAEA375SoilMaterial, "Source");
-  G4ThreeVector srcPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness + sourceHeight/2));
-  fSrcPV = new G4PVPlacement(nullptr, srcPos, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
+  // See if no point source on the top, then the IAEA-375 soil is the source
+  const G4String soilString(pointSourceOnTop ? "Soil" : "Source");
+  G4Tubs *soilS = new G4Tubs("soil", 0, containerDiameter/2 - containerThickness, soilHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fIAEA375SoilMaterial, "Soil");
+  G4ThreeVector soilPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness + soilHeight/2));
+  new G4PVPlacement(nullptr, soilPos, soilLV, soilString, worldLV, false, 0, fCheckOverlaps);
 
   G4VisAttributes grey(G4Colour::Grey());
   G4VisAttributes brown(G4Colour::Brown());
@@ -414,7 +429,18 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   containerSideLV->SetVisAttributes(grey);
   containerBaseLV->SetVisAttributes(grey);
   containerTopLV->SetVisAttributes(grey);
-  srcLV->SetVisAttributes(brown);
+  soilLV->SetVisAttributes(brown);
+
+  // This is the case if a point source is on the top of the sample instead
+  if (pointSourceOnTop) {
+    G4Tubs *srcS = new G4Tubs("source", 0, sourceRadius, sourceHeight/2, 0.*deg, 360.*deg);
+    G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
+    G4ThreeVector srcPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight + sourceHeight/2));
+    new G4PVPlacement(nullptr, srcPos, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
+
+    G4VisAttributes yellow(G4Colour::Yellow());
+    srcLV->SetVisAttributes(yellow);
+  }
 }
 
 

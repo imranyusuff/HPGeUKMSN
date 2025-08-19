@@ -30,7 +30,7 @@ HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction(G4int geometryS
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1., 0., 0.));
   fParticleGun->SetParticleEnergy(0.661657 * MeV);
 
-  // if soil geometry then populate constituent isotope table
+  // if soil geometry and soil as source then populate constituent isotope table
   if (fGeometrySelection == 2 ||
       fGeometrySelection == 2000 ||
       fGeometrySelection == 2001 ||
@@ -64,7 +64,7 @@ HPGeUKMSNPrimaryGeneratorAction::~HPGeUKMSNPrimaryGeneratorAction()
 
 void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
-  // Randomize source isotope for soil geometries
+  // Randomize source isotope for soil geometry with soil source
   if (fGeometrySelection == 2 ||
       fGeometrySelection == 2000 ||
       fGeometrySelection == 2001 ||
@@ -107,6 +107,7 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
   G4VPhysicalVolume *srcPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("Source");
   const G4ThreeVector src3V = srcPV->GetObjectTranslation();
   G4ThreeVector displacement;
+  // Source from soil geometry in soil geometry mode and soil as source
   if (fGeometrySelection == 2 ||
       fGeometrySelection == 2000 ||
       fGeometrySelection == 2001 ||

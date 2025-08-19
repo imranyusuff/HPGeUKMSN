@@ -44,7 +44,8 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
       const double baseShieldThickness,
       const double endcapHeight,
       const double endcapTopThickness,
-      const int variant
+      const int variant,
+      const bool pointSourceOnTop
     );
 
     void DefineCommands();
