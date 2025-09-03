@@ -152,22 +152,31 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
     DefineExperimentGeometry1(worldLV, baseShieldThickness);
   }
   else if (fGeometrySelection == 2 || fGeometrySelection == 2000) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, false);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, false, false);
   }
   else if (fGeometrySelection == 2001) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, false);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, false, false);
   }
   else if (fGeometrySelection == 2002) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, false);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, false, false);
   }
   else if (fGeometrySelection == 3 || fGeometrySelection == 3000) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, true);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, true, false);
   }
   else if (fGeometrySelection == 3001) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, true);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, true, false);
   }
   else if (fGeometrySelection == 3002) {
-    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true);
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true, false);
+  }
+  else if (fGeometrySelection == 3010) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, true, true);
+  }
+  else if (fGeometrySelection == 3011) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, true, true);
+  }
+  else if (fGeometrySelection == 3012) {
+    DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true, true);
   }
   else {
     G4cout << "Geometry selection error." << G4endl;
@@ -388,7 +397,8 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   const double endcapHeight,
   const double endcapTopThickness,
   const int variant,
-  const bool pointSourceOnTop)
+  const bool pointSourceOnTop,
+  const bool noSoil)
 {
   const double containerThickness = 1.*mm;
 
@@ -416,20 +426,22 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   G4ThreeVector containerTopPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight - containerThickness/2));
   new G4PVPlacement(nullptr, containerTopPos, containerTopLV, "ContainerTop", worldLV, false, 0, fCheckOverlaps);
 
-  // See if no point source on the top, then the IAEA-375 soil is the source
-  const G4String soilString(pointSourceOnTop ? "Soil" : "Source");
-  G4Tubs *soilS = new G4Tubs("soil", 0, containerDiameter/2 - containerThickness, soilHeight/2, 0.*deg, 360.*deg);
-  G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fIAEA375SoilMaterial, "Soil");
-  G4ThreeVector soilPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness + soilHeight/2));
-  new G4PVPlacement(nullptr, soilPos, soilLV, soilString, worldLV, false, 0, fCheckOverlaps);
-
   G4VisAttributes grey(G4Colour::Grey());
-  G4VisAttributes brown(G4Colour::Brown());
 
   containerSideLV->SetVisAttributes(grey);
   containerBaseLV->SetVisAttributes(grey);
   containerTopLV->SetVisAttributes(grey);
-  soilLV->SetVisAttributes(brown);
+
+  if (!noSoil) {
+    // See if no point source on the top, then the IAEA-375 soil is the source
+    const G4String soilString(pointSourceOnTop ? "Soil" : "Source");
+    G4Tubs *soilS = new G4Tubs("soil", 0, containerDiameter/2 - containerThickness, soilHeight/2, 0.*deg, 360.*deg);
+    G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fIAEA375SoilMaterial, "Soil");
+    G4ThreeVector soilPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness + soilHeight/2));
+    new G4PVPlacement(nullptr, soilPos, soilLV, soilString, worldLV, false, 0, fCheckOverlaps);
+    G4VisAttributes brown(G4Colour::Brown());
+    soilLV->SetVisAttributes(brown);
+  }
 
   // This is the case if a point source is on the top of the sample instead
   if (pointSourceOnTop) {
