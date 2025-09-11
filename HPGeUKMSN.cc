@@ -1,6 +1,7 @@
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "Randomize.hh"
+#include <sstream>
 #include <time.h>
 #include <unistd.h>
 
@@ -19,6 +20,12 @@ int main(int argc, char *argv[])
 {
   G4int geometrySelection = 0;
 
+  std::stringstream strCmdLine;
+  strCmdLine << "Invoked as: ";
+  for (int i=0; i<argc; i++) {
+    strCmdLine << " " << argv[i];
+  }
+
   int opt;
   while ((opt = getopt(argc, argv, "g:")) != -1) {
     switch(opt) {
@@ -36,6 +43,7 @@ int main(int argc, char *argv[])
     ui = new G4UIExecutive(argc, argv);
   }
 
+  G4cout << strCmdLine.str() << std::endl;
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   theSeed = time(NULL);
   G4Random::setTheSeed(theSeed);
