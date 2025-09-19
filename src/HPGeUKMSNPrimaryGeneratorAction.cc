@@ -82,6 +82,7 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     ion = ionTable->GetIon(Z, A, 0.0);
     fParticleGun->SetParticleDefinition(ion);
     fParticleGun->SetParticleEnergy(0.0);  // Energy is ignored for decaying ions
+    /* For now just enable the decay chain
     // disable decay chain
     auto radioactiveDecay =
       static_cast<G4RadioactiveDecay*>(G4ProcessTable::GetProcessTable()->FindProcess("Radioactivation", "GenericIon"));
@@ -93,6 +94,7 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     else {
       G4cout << "WARNING: CANNOT GET THE RADIOACTIVE DECAY PROCESS!" << G4endl;
     }
+    */
   }
 
   // Isotropic gamma ray photon direction
