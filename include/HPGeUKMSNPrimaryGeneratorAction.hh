@@ -13,7 +13,7 @@ class G4Event;
 class HPGeUKMSNPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
-    HPGeUKMSNPrimaryGeneratorAction(G4int geometrySelection);
+    HPGeUKMSNPrimaryGeneratorAction(G4int geometrySelection, G4bool alwaysSingleSource);
     virtual ~HPGeUKMSNPrimaryGeneratorAction();
 
     virtual void GeneratePrimaries(G4Event *);
@@ -23,6 +23,7 @@ class HPGeUKMSNPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   private:
     G4ParticleGun *fParticleGun;
     G4int          fGeometrySelection;
+    G4bool         fAlwaysSingleSource;
 
     std::vector<G4int> fIAEA375IsotopesZ;
     std::vector<G4int> fIAEA375IsotopesA;

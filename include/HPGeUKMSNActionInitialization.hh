@@ -8,13 +8,14 @@
 class HPGeUKMSNActionInitialization : public G4VUserActionInitialization
 {
   public:
-    HPGeUKMSNActionInitialization(G4int geometrySelection);
+    HPGeUKMSNActionInitialization(G4int geometrySelection, G4bool alwaysSingleSource);
     virtual ~HPGeUKMSNActionInitialization();
 
     virtual void Build() const;
 
   private:
     G4int fGeometrySelection;
+    G4bool fAlwaysSingleSource;
 };
 
 

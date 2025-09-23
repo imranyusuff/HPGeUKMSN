@@ -19,6 +19,7 @@ long theSeed;
 int main(int argc, char *argv[])
 {
   G4int geometrySelection = 0;
+  G4bool alwaysSingleSource = false;
 
   std::stringstream strCmdLine;
   strCmdLine << "Invoked as: ";
@@ -27,13 +28,16 @@ int main(int argc, char *argv[])
   }
 
   int opt;
-  while ((opt = getopt(argc, argv, "g:")) != -1) {
+  while ((opt = getopt(argc, argv, "g:s")) != -1) {
     switch(opt) {
     case 'g':
       geometrySelection = atoi(optarg);
       break;
+    case 's':
+      alwaysSingleSource = true;
+      break;
     default:
-      G4cerr << "Usage: " << argv[0] << " [-g geom#] <other args for Geant4...>" << G4endl;
+      G4cerr << "Usage: " << argv[0] << " [-g geom#] [-s] <other args for Geant4...>" << G4endl;
       return 1;
     }
   }
@@ -58,7 +62,7 @@ int main(int argc, char *argv[])
   physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics);
   runManager->SetUserInitialization(physicsList);
 
-  runManager->SetUserInitialization(new HPGeUKMSNActionInitialization(geometrySelection));
+  runManager->SetUserInitialization(new HPGeUKMSNActionInitialization(geometrySelection, alwaysSingleSource));
 
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();

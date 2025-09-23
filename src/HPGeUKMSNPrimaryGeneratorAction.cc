@@ -16,9 +16,10 @@
 #include "Randomize.hh"
 
 
-HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction(G4int geometrySelection)
+HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction(G4int geometrySelection, G4bool alwaysSingleSource)
  : G4VUserPrimaryGeneratorAction(),
-   fGeometrySelection(geometrySelection)
+   fGeometrySelection(geometrySelection),
+   fAlwaysSingleSource(alwaysSingleSource)
 {
   G4int nParticles = 1;
   fParticleGun = new G4ParticleGun(nParticles);
@@ -31,10 +32,11 @@ HPGeUKMSNPrimaryGeneratorAction::HPGeUKMSNPrimaryGeneratorAction(G4int geometryS
   fParticleGun->SetParticleEnergy(0.661657 * MeV);
 
   // if soil geometry and soil as source then populate constituent isotope table
-  if (fGeometrySelection == 2 ||
-      fGeometrySelection == 2000 ||
-      fGeometrySelection == 2001 ||
-      fGeometrySelection == 2002) {
+  if (!fAlwaysSingleSource && (
+       fGeometrySelection == 2 ||
+       fGeometrySelection == 2000 ||
+       fGeometrySelection == 2001 ||
+       fGeometrySelection == 2002)) {
     // Information from https://analytical-reference-materials.iaea.org/iaea-375
     // Reference decay rates at 1991-12-31  (TODO: extrapolate to desired date)
     //                     Cs   Cs   Sr    K   Ra   Th   Th    U    U   Pu   Pu   Am   Sb   Ru    I
@@ -65,10 +67,11 @@ HPGeUKMSNPrimaryGeneratorAction::~HPGeUKMSNPrimaryGeneratorAction()
 void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
   // Randomize source isotope for soil geometry with soil source
-  if (fGeometrySelection == 2 ||
-      fGeometrySelection == 2000 ||
-      fGeometrySelection == 2001 ||
-      fGeometrySelection == 2002) {
+  if (!fAlwaysSingleSource && (
+       fGeometrySelection == 2 ||
+       fGeometrySelection == 2000 ||
+       fGeometrySelection == 2001 ||
+       fGeometrySelection == 2002)) {
     G4IonTable* ionTable = G4IonTable::GetIonTable();
     G4double rand = G4UniformRand();
     G4ParticleDefinition* ion = nullptr;
