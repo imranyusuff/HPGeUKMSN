@@ -7,8 +7,11 @@
 
 #include "HPGeUKMSNDetectorConstruction.hh"
 #include "HPGeUKMSNActionInitialization.hh"
-#include "QGSP_BERT.hh"
+#include "FTFP_BERT.hh"
+#include "G4EmLivermorePhysics.hh"
 #include "G4RadioactiveDecayPhysics.hh"
+#include "G4LossTableManager.hh"
+#include "G4UAtomicDeexcitation.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -57,9 +60,18 @@ int main(int argc, char *argv[])
 
   runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction(geometrySelection));
 
-  G4VModularPhysicsList *physicsList = new QGSP_BERT;
+  G4VModularPhysicsList *physicsList = new FTFP_BERT;
   physicsList->SetVerboseLevel(1);
+  physicsList->ReplacePhysics(new G4EmLivermorePhysics);
   physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics);
+
+  // enable atomic deexcitation
+  auto de = new G4UAtomicDeexcitation();
+  de->SetFluo(true);
+  de->SetAuger(true);
+  de->SetPIXE(true);
+  G4LossTableManager::Instance()->SetAtomDeexcitation(de);
+
   runManager->SetUserInitialization(physicsList);
 
   runManager->SetUserInitialization(new HPGeUKMSNActionInitialization(geometrySelection, alwaysSingleSource));
