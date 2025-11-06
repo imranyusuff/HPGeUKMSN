@@ -90,6 +90,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   //const double detectorHeight = 207.4*mm;
   const double detectorHeight = 50.0*mm;
 
+  const double detCoreHoleRadius = 4.*mm;
+  const double detCoreHoleDepth  = 34.*mm;
+
   const double detectorHolderInnerRadius = 29.5*mm;
   const double detectorHolderOuterRadius = 31.0*mm;
   //const double detectorHolderHeight = 202.4*mm;
@@ -125,10 +128,15 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4ThreeVector doorshieldPos = G4ThreeVector(0, 0, baseShieldThickness + bodyShieldHeight + doorShieldThickness/2);
   G4VPhysicalVolume *doorshieldPV = new G4PVPlacement(nullptr, doorshieldPos, doorshieldLV, "DoorShield", worldLV, false, 0, fCheckOverlaps);
 
-  G4Tubs *detS = new G4Tubs("detector", 0, detectorRadius, detectorHeight/2, 0.*deg, 360.*deg);
-  G4LogicalVolume *detLV = new G4LogicalVolume(detS, fDetMaterial, "Detector");
-  G4ThreeVector detPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight/2);
-  G4VPhysicalVolume *detPV = new G4PVPlacement(nullptr, detPos, detLV, "Detector", worldLV, false, 0, fCheckOverlaps);
+  G4Tubs *dettopS = new G4Tubs("detectorTop", 0, detectorRadius, (detectorHeight-detCoreHoleDepth)/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *dettopLV = new G4LogicalVolume(dettopS, fDetMaterial, "DetectorTop");
+  G4ThreeVector dettopPos = G4ThreeVector(0, 0, detectorHolderHeight - (detectorHeight-detCoreHoleDepth)/2);
+  G4VPhysicalVolume *dettopPV = new G4PVPlacement(nullptr, dettopPos, dettopLV, "DetectorTop", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *detbottomS = new G4Tubs("detectorBottom", detCoreHoleRadius, detectorRadius, detCoreHoleDepth/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *detbottomLV = new G4LogicalVolume(detbottomS, fDetMaterial, "DetectorBottom");
+  G4ThreeVector detbottomPos = G4ThreeVector(0, 0, detectorHolderHeight-detectorHeight+detCoreHoleDepth/2);
+  G4VPhysicalVolume *detbottomPV = new G4PVPlacement(nullptr, detbottomPos, detbottomLV, "DetectorBottom", worldLV, false, 0, fCheckOverlaps);
 
   G4Tubs *detHolderS = new G4Tubs("detectorHolder", detectorHolderInnerRadius, detectorHolderOuterRadius, detectorHolderHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *detHolderLV = new G4LogicalVolume(detHolderS, fDetHolderMaterial, "DetectorHolder");
@@ -190,15 +198,17 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4VisAttributes yellow(G4Colour::Yellow());
   G4VisAttributes magenta(G4Colour::Magenta());
   G4VisAttributes cyan(G4Colour::Cyan());
+  G4VisAttributes gray(G4Colour::Gray());
 
   worldLV->SetVisAttributes(invisible);
   baseshieldLV->SetVisAttributes(red);
   bodyshieldLV->SetVisAttributes(red);
   doorshieldLV->SetVisAttributes(magenta);
-  detLV->SetVisAttributes(cyan);
+  dettopLV->SetVisAttributes(cyan);
+  detbottomLV->SetVisAttributes(cyan);
   detHolderLV->SetVisAttributes(blue);
-  endcapLV->SetVisAttributes(blue);
-  endcapTopLV->SetVisAttributes(blue);
+  endcapLV->SetVisAttributes(gray);
+  endcapTopLV->SetVisAttributes(gray);
 
   return worldPV;
 }
@@ -460,7 +470,8 @@ void HPGeUKMSNDetectorConstruction::ConstructSDandField()
 {
   HPGeUKMSNDetectorSD *detSD = new HPGeUKMSNDetectorSD("/Detector", "DetectorHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(detSD);
-  SetSensitiveDetector("Detector", detSD, true);
+  SetSensitiveDetector("DetectorTop", detSD, true);
+  SetSensitiveDetector("DetectorBottom", detSD, true);
 }
 
 
