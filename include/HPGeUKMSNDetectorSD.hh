@@ -4,6 +4,7 @@
 #include "G4VSensitiveDetector.hh"
 
 #include "HPGeUKMSNDetectorHit.hh"
+#include "G4Navigator.hh"
 
 
 class G4Step;
@@ -22,6 +23,7 @@ class HPGeUKMSNDetectorSD : public G4VSensitiveDetector
 
   private:
     HPGeUKMSNDetectorHitsCollection *fHitsCollection;
+    G4Navigator *fNavigator = nullptr;
 };
 
 

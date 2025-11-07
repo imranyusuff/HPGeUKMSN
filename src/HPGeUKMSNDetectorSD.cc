@@ -1,7 +1,9 @@
 #include "HPGeUKMSNDetectorSD.hh"
 #include "G4HCofThisEvent.hh"
+#include "G4TransportationManager.hh"
 #include "G4Step.hh"
 #include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
 
 
 HPGeUKMSNDetectorSD::HPGeUKMSNDetectorSD(const G4String & name, const G4String & hitsCollectionName)
@@ -9,6 +11,7 @@ HPGeUKMSNDetectorSD::HPGeUKMSNDetectorSD(const G4String & name, const G4String &
    fHitsCollection(NULL)
 {
   collectionName.insert(hitsCollectionName);
+  fNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
 }
 
 
@@ -27,7 +30,21 @@ void HPGeUKMSNDetectorSD::Initialize(G4HCofThisEvent *hce)
 
 G4bool HPGeUKMSNDetectorSD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 {
+  const G4double deadLayerThickness = 1.*mm;      // HPGe dead-layer thickness
   const G4double threshold = 0.*CLHEP::keV;       // HPGe detection threshold (disable for now)
+
+  const G4StepPoint *prePoint = aStep->GetPreStepPoint();
+  const G4ThreeVector globalPos = prePoint->GetPosition();
+  //const G4ThreeVector direction = prePoint->GetMomentumDirection().unit();
+
+  const G4double safety = fNavigator->ComputeSafety(globalPos);
+  //G4cout << "Safety is " << safety/mm << " mm" << G4endl;
+
+  if (safety < deadLayerThickness) {
+    // Hard cutoff
+    return false;
+  }
+
   G4double edep = aStep->GetTotalEnergyDeposit();
   if (edep < threshold) return false;       // No hit creation below threshold
   HPGeUKMSNDetectorHit *newHit = new HPGeUKMSNDetectorHit();
