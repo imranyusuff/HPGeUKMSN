@@ -66,6 +66,16 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ti"), 0.015);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Na"), 0.015);
 
+  // Realistic vacuum between detector holder and endcap
+  fVacuumMaterial = new G4Material("Vacuum",
+                                   1.161e-11 * g/cm3,   // vacuum density at 300 K
+                                   2,                   // 2 elements
+                                   kStateGas,
+                                   300.0 * kelvin,      // vacuum temperature @ 300 K
+                                   1e-8 * bar);    // vacuum pressure at 300 K
+  fVacuumMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("N"), 0.78);
+  fVacuumMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.22);
+
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
@@ -152,6 +162,16 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4ThreeVector endcapTopPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness/2);
   G4VPhysicalVolume *endcapTopPV = new G4PVPlacement(nullptr, endcapTopPos, endcapTopLV, "EndcapTop", worldLV, false, 0, fCheckOverlaps);
 
+  G4Tubs *vacuumGapTubS = new G4Tubs("vacuumGapTub", detectorHolderOuterRadius, endcapOuterRadius - endcapThickness, endcapHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *vacuumGapTubLV = new G4LogicalVolume(vacuumGapTubS, fVacuumMaterial, "VacuumGapTub");
+  G4ThreeVector vacuumGapTubPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight/2);
+  G4VPhysicalVolume *vacuumGapTubPV = new G4PVPlacement(nullptr, vacuumGapTubPos, vacuumGapTubLV, "VacuumGapTub", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *vacuumGapTopS = new G4Tubs("vacuumGapTop", 0, detectorHolderOuterRadius, (endcapHeight - detectorHolderHeight + baseShieldThickness)/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *vacuumGapTopLV = new G4LogicalVolume(vacuumGapTopS, fVacuumMaterial, "VacuumGapTop");
+  G4ThreeVector vacuumGapTopPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight - (endcapHeight - detectorHolderHeight + baseShieldThickness)/2);
+  G4VPhysicalVolume *vacuumGapTopPV = new G4PVPlacement(nullptr, vacuumGapTopPos, vacuumGapTopLV, "VacuumGapTop", worldLV, false, 0, fCheckOverlaps);
+
   if (fGeometrySelection == 0) {
     DefineExperimentGeometry0(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness);
   }
@@ -198,6 +218,7 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4VisAttributes magenta(G4Colour::Magenta());
   G4VisAttributes cyan(G4Colour::Cyan());
   G4VisAttributes gray(G4Colour::Gray());
+  G4VisAttributes darkgray(G4Colour(0.25, 0.25, 0.25));
 
   worldLV->SetVisAttributes(invisible);
   baseshieldLV->SetVisAttributes(red);
@@ -207,6 +228,8 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   detHolderLV->SetVisAttributes(blue);
   endcapLV->SetVisAttributes(gray);
   endcapTopLV->SetVisAttributes(gray);
+  vacuumGapTubLV->SetVisAttributes(darkgray);
+  vacuumGapTopLV->SetVisAttributes(darkgray);
 
   return worldPV;
 }

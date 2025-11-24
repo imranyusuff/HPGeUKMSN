@@ -59,6 +59,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fDetHolderMaterial;
     G4Material *fEndcapMaterial;
     G4Material *fEndcapTopMaterial;
+    G4Material *fVacuumMaterial;
     G4Material *fStopMaterial;
     G4Material *fSrcMaterial;
     G4Material *fStandMaterial;
