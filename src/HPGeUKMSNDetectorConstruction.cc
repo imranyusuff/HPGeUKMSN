@@ -112,7 +112,7 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   const double endcapOuterRadius = (71.5*mm)/2;
   const double endcapThickness   =  1.5*mm;
   //const double endcapHeight      = 105*mm;  /* endcap + baseShield = 105 + 102.4 = 207.4 */
-  const double endcapHeight      = 130*mm;
+  const double endcapHeight      = 131*mm;    // for vacuum thickness of 6 mm
 
   const double endcapTopThickness = 1.5*mm;
 
