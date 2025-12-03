@@ -20,9 +20,10 @@
 #include "G4SystemOfUnits.hh"
 
 
-HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction(G4int geometrySelection)
+HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction(G4int geometrySelection, G4bool detailedIRWindow)
 : G4VUserDetectorConstruction(),
   fGeometrySelection(geometrySelection),
+  fDetailedIRWindow(detailedIRWindow),
   fCheckOverlaps(true)
 {
   DefineCommands();
@@ -48,15 +49,17 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   nistManager->FindOrBuildMaterial("G4_AIR");
   fDetMaterial = nistManager->FindOrBuildMaterial("G4_Ge");
   fDetHolderMaterial = nistManager->FindOrBuildMaterial("G4_Al");
-  fDetIRKaptonMaterial = nistManager->FindOrBuildMaterial("G4_KAPTON");
-  fDetIRMylarMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
-  fDetIRAlMaterial = nistManager->FindOrBuildMaterial("G4_Al");
   fEndcapMaterial = nistManager->FindOrBuildMaterial("G4_Al");
   fEndcapTopMaterial = nistManager->FindOrBuildMaterial("G4_Al");
   fStopMaterial = nistManager->FindOrBuildMaterial("G4_Pb");
   fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fStandMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fContainerMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
+  if (fDetailedIRWindow) {
+    fDetIRKaptonMaterial = nistManager->FindOrBuildMaterial("G4_KAPTON");
+    fDetIRMylarMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
+    fDetIRAlMaterial = nistManager->FindOrBuildMaterial("G4_Al");
+  }
 
   // IAEA-375 standard calibration soil material
   fIAEA375SoilMaterial = new G4Material("IAEA375Soil", 1.55 * g/cm3, 8);
@@ -106,7 +109,9 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   const double detIRKaptonThickness = 101.6*um;         // for the detector's IR window
   const double detIRMylarThickness  = 8.4667*um;
   const double detIRAlThickness     = 0.1*um;
-  const double detectorHeightProper = detectorHeight - detIRKaptonThickness - detIRMylarThickness - detIRAlThickness;
+  const double detectorHeightProper = fDetailedIRWindow ?
+                                      detectorHeight - detIRKaptonThickness - detIRMylarThickness - detIRAlThickness
+                                      : detectorHeight;
 
   const double detCoreHoleRadius = 4.*mm;
   const double detCoreHoleDepth  = 34.*mm;
@@ -154,20 +159,27 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4ThreeVector detPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper/2);
   G4VPhysicalVolume *detPV = new G4PVPlacement(nullptr, detPos, detLV, "Detector", worldLV, false, 0, fCheckOverlaps);
 
-  G4Tubs *detIRAlS = new G4Tubs("detIRWindowAl", 0, detectorRadius, detIRAlThickness/2, 0.*deg, 360.*deg);
-  G4LogicalVolume *detIRAlLV = new G4LogicalVolume(detIRAlS, fDetIRAlMaterial, "DetIRWindowAl");
-  G4ThreeVector detIRAlPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper + detIRAlThickness/2);
-  G4VPhysicalVolume *detIRAlPV = new G4PVPlacement(nullptr, detIRAlPos, detIRAlLV, "DetIRWindowAl", worldLV, false, 0, fCheckOverlaps);
+  if (fDetailedIRWindow) {
+    G4Tubs *detIRAlS = new G4Tubs("detIRWindowAl", 0, detectorRadius, detIRAlThickness/2, 0.*deg, 360.*deg);
+    G4LogicalVolume *detIRAlLV = new G4LogicalVolume(detIRAlS, fDetIRAlMaterial, "DetIRWindowAl");
+    G4ThreeVector detIRAlPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper + detIRAlThickness/2);
+    G4VPhysicalVolume *detIRAlPV = new G4PVPlacement(nullptr, detIRAlPos, detIRAlLV, "DetIRWindowAl", worldLV, false, 0, fCheckOverlaps);
 
-  G4Tubs *detIRMylarS = new G4Tubs("detIRWindowMylar", 0, detectorRadius, detIRMylarThickness/2, 0.*deg, 360.*deg);
-  G4LogicalVolume *detIRMylarLV = new G4LogicalVolume(detIRMylarS, fDetIRMylarMaterial, "DetIRWindowMylar");
-  G4ThreeVector detIRMylarPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper + detIRAlThickness + detIRMylarThickness/2);
-  G4VPhysicalVolume *detIRMylarPV = new G4PVPlacement(nullptr, detIRMylarPos, detIRMylarLV, "DetIRWindowMylar", worldLV, false, 0, fCheckOverlaps);
+    G4Tubs *detIRMylarS = new G4Tubs("detIRWindowMylar", 0, detectorRadius, detIRMylarThickness/2, 0.*deg, 360.*deg);
+    G4LogicalVolume *detIRMylarLV = new G4LogicalVolume(detIRMylarS, fDetIRMylarMaterial, "DetIRWindowMylar");
+    G4ThreeVector detIRMylarPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper + detIRAlThickness + detIRMylarThickness/2);
+    G4VPhysicalVolume *detIRMylarPV = new G4PVPlacement(nullptr, detIRMylarPos, detIRMylarLV, "DetIRWindowMylar", worldLV, false, 0, fCheckOverlaps);
 
-  G4Tubs *detIRKaptonS = new G4Tubs("detIRWindowKapton", 0, detectorRadius, detIRKaptonThickness/2, 0.*deg, 360.*deg);
-  G4LogicalVolume *detIRKaptonLV = new G4LogicalVolume(detIRKaptonS, fDetIRKaptonMaterial, "DetIRWindowKapton");
-  G4ThreeVector detIRKaptonPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper + detIRAlThickness + detIRMylarThickness + detIRKaptonThickness/2);
-  G4VPhysicalVolume *detIRKaptonPV = new G4PVPlacement(nullptr, detIRKaptonPos, detIRKaptonLV, "DetIRWindowKapton", worldLV, false, 0, fCheckOverlaps);
+    G4Tubs *detIRKaptonS = new G4Tubs("detIRWindowKapton", 0, detectorRadius, detIRKaptonThickness/2, 0.*deg, 360.*deg);
+    G4LogicalVolume *detIRKaptonLV = new G4LogicalVolume(detIRKaptonS, fDetIRKaptonMaterial, "DetIRWindowKapton");
+    G4ThreeVector detIRKaptonPos = G4ThreeVector(0, 0, detectorHolderHeight - detectorHeight + detectorHeightProper + detIRAlThickness + detIRMylarThickness + detIRKaptonThickness/2);
+    G4VPhysicalVolume *detIRKaptonPV = new G4PVPlacement(nullptr, detIRKaptonPos, detIRKaptonLV, "DetIRWindowKapton", worldLV, false, 0, fCheckOverlaps);
+
+    G4VisAttributes cyan(G4Colour::Cyan());
+    detIRMylarLV->SetVisAttributes(cyan);
+    detIRKaptonLV->SetVisAttributes(cyan);
+    detIRAlLV->SetVisAttributes(cyan);
+  }
 
   G4Tubs *detHolderS = new G4Tubs("detectorHolder", detectorHolderInnerRadius, detectorHolderOuterRadius, detectorHolderHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *detHolderLV = new G4LogicalVolume(detHolderS, fDetHolderMaterial, "DetectorHolder");
@@ -247,9 +259,6 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   bodyshieldLV->SetVisAttributes(red);
   doorshieldLV->SetVisAttributes(magenta);
   detLV->SetVisAttributes(cyan);
-  detIRMylarLV->SetVisAttributes(cyan);
-  detIRKaptonLV->SetVisAttributes(cyan);
-  detIRAlLV->SetVisAttributes(cyan);
   detHolderLV->SetVisAttributes(blue);
   endcapLV->SetVisAttributes(gray);
   endcapTopLV->SetVisAttributes(gray);

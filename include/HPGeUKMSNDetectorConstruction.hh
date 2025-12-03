@@ -13,7 +13,7 @@ class G4Material;
 class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    HPGeUKMSNDetectorConstruction(G4int geometrySelection);
+    HPGeUKMSNDetectorConstruction(G4int geometrySelection, G4bool detailedIRWindow = false);
     virtual ~HPGeUKMSNDetectorConstruction();
 
     virtual G4VPhysicalVolume *Construct();
@@ -52,6 +52,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     void DefineCommands();
 
     G4int fGeometrySelection;
+    G4bool fDetailedIRWindow;
 
     G4GenericMessenger* fMessenger;
 

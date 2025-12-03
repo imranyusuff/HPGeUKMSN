@@ -22,6 +22,7 @@ long theSeed;
 int main(int argc, char *argv[])
 {
   G4int geometrySelection = 0;
+  G4bool detailedIRWindow = false;
   G4bool alwaysSingleSource = false;
 
   std::stringstream strCmdLine;
@@ -31,16 +32,19 @@ int main(int argc, char *argv[])
   }
 
   int opt;
-  while ((opt = getopt(argc, argv, "g:s")) != -1) {
+  while ((opt = getopt(argc, argv, "g:is")) != -1) {
     switch(opt) {
     case 'g':
       geometrySelection = atoi(optarg);
+      break;
+    case 'i':
+      detailedIRWindow = true;
       break;
     case 's':
       alwaysSingleSource = true;
       break;
     default:
-      G4cerr << "Usage: " << argv[0] << " [-g geom#] [-s] <other args for Geant4...>" << G4endl;
+      G4cerr << "Usage: " << argv[0] << " [-g geom#] [-i] [-s] <other args for Geant4...>" << G4endl;
       return 1;
     }
   }
@@ -58,7 +62,7 @@ int main(int argc, char *argv[])
 
   G4RunManager *runManager = new G4RunManager;
 
-  runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction(geometrySelection));
+  runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction(geometrySelection, detailedIRWindow));
 
   G4VModularPhysicsList *physicsList = new FTFP_BERT;
   physicsList->SetVerboseLevel(1);
