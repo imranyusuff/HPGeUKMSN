@@ -30,7 +30,7 @@ void HPGeUKMSNDetectorSD::Initialize(G4HCofThisEvent *hce)
 
 G4bool HPGeUKMSNDetectorSD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 {
-  const G4double deadLayerThickness = 0.35*mm;      // HPGe dead-layer thickness
+  const G4double deadLayerThickness = 0.5*mm;      // HPGe dead-layer thickness
   const G4double threshold = 0.*CLHEP::keV;       // HPGe detection threshold (disable for now)
 
   const G4StepPoint *prePoint = aStep->GetPreStepPoint();
