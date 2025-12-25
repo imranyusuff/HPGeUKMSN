@@ -46,7 +46,8 @@ HPGeUKMSNEventAction::GetHitsCollection(G4int hcID, const G4Event *event) const
 void HPGeUKMSNEventAction::BeginOfEventAction(const G4Event *event)
 {
   const G4int evtID = event->GetEventID();
-  if (evtID % 1000000 == 0) {
+  if (((evtID < 1000) && (evtID % 100 == 0)) ||
+      (evtID % 1000 == 0)) {
     G4cout << "Processing event " << evtID << G4endl;
   }
 }
