@@ -14,7 +14,9 @@ class G4HCofThisEvent;
 class HPGeUKMSNDetectorSD : public G4VSensitiveDetector
 {
   public:
-    HPGeUKMSNDetectorSD(const G4String & name, const G4String & hitsCollectionName);
+    HPGeUKMSNDetectorSD(const G4String & name,
+                        const G4String & hitsCollectionName,
+                        G4double deadLayerThickness);
     virtual ~HPGeUKMSNDetectorSD();
 
     virtual void Initialize(G4HCofThisEvent *hitCollection);
@@ -24,6 +26,7 @@ class HPGeUKMSNDetectorSD : public G4VSensitiveDetector
   private:
     HPGeUKMSNDetectorHitsCollection *fHitsCollection;
     G4Navigator *fNavigator = nullptr;
+    G4double fDeadLayerThickness;
 };
 
 

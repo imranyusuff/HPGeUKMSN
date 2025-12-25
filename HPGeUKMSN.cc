@@ -21,6 +21,7 @@ long theSeed;
 
 int main(int argc, char *argv[])
 {
+  G4double deadLayerThicknessMM = 0.35;
   G4int geometrySelection = 0;
   G4bool detailedIRWindow = false;
   G4bool alwaysSingleSource = false;
@@ -32,8 +33,11 @@ int main(int argc, char *argv[])
   }
 
   int opt;
-  while ((opt = getopt(argc, argv, "g:is")) != -1) {
+  while ((opt = getopt(argc, argv, "d:g:is")) != -1) {
     switch(opt) {
+    case 'd':
+      deadLayerThicknessMM = atof(optarg);
+      break;
     case 'g':
       geometrySelection = atoi(optarg);
       break;
@@ -44,7 +48,7 @@ int main(int argc, char *argv[])
       alwaysSingleSource = true;
       break;
     default:
-      G4cerr << "Usage: " << argv[0] << " [-g geom#] [-i] [-s] <other args for Geant4...>" << G4endl;
+      G4cerr << "Usage: " << argv[0] << " [-d deadlayer_thick/mm] [-g geom#] [-i] [-s] <other args for Geant4...>" << G4endl;
       return 1;
     }
   }
@@ -62,7 +66,7 @@ int main(int argc, char *argv[])
 
   G4RunManager *runManager = new G4RunManager;
 
-  runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction(geometrySelection, detailedIRWindow));
+  runManager->SetUserInitialization(new HPGeUKMSNDetectorConstruction(geometrySelection, deadLayerThicknessMM, detailedIRWindow));
 
   G4VModularPhysicsList *physicsList = new FTFP_BERT;
   physicsList->SetVerboseLevel(1);

@@ -6,9 +6,12 @@
 #include "G4SystemOfUnits.hh"
 
 
-HPGeUKMSNDetectorSD::HPGeUKMSNDetectorSD(const G4String & name, const G4String & hitsCollectionName)
+HPGeUKMSNDetectorSD::HPGeUKMSNDetectorSD(const G4String & name,
+                                         const G4String & hitsCollectionName,
+                                         G4double deadLayerThickness)
  : G4VSensitiveDetector(name),
-   fHitsCollection(NULL)
+   fHitsCollection(NULL),
+   fDeadLayerThickness(deadLayerThickness)
 {
   collectionName.insert(hitsCollectionName);
   fNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
@@ -30,7 +33,7 @@ void HPGeUKMSNDetectorSD::Initialize(G4HCofThisEvent *hce)
 
 G4bool HPGeUKMSNDetectorSD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 {
-  const G4double deadLayerThickness = 0.5*mm;      // HPGe dead-layer thickness
+  // const G4double deadLayerThickness = 0.5*mm;      // HPGe dead-layer thickness (now from cmdline)
   const G4double threshold = 0.*CLHEP::keV;       // HPGe detection threshold (disable for now)
 
   const G4StepPoint *prePoint = aStep->GetPreStepPoint();
@@ -40,7 +43,7 @@ G4bool HPGeUKMSNDetectorSD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
   const G4double safety = fNavigator->ComputeSafety(globalPos);
   //G4cout << "Safety is " << safety/mm << " mm" << G4endl;
 
-  if (safety < deadLayerThickness) {
+  if (safety < fDeadLayerThickness) {
     // Hard cutoff
     return false;
   }

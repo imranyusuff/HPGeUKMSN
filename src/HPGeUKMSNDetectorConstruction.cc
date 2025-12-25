@@ -20,9 +20,12 @@
 #include "G4SystemOfUnits.hh"
 
 
-HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction(G4int geometrySelection, G4bool detailedIRWindow)
+HPGeUKMSNDetectorConstruction::HPGeUKMSNDetectorConstruction(G4int geometrySelection,
+                                                             G4double deadLayerThicknessMM,
+                                                             G4bool detailedIRWindow)
 : G4VUserDetectorConstruction(),
   fGeometrySelection(geometrySelection),
+  fDeadLayerThickness(deadLayerThicknessMM*mm),
   fDetailedIRWindow(detailedIRWindow),
   fCheckOverlaps(true)
 {
@@ -523,7 +526,7 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
 
 void HPGeUKMSNDetectorConstruction::ConstructSDandField()
 {
-  HPGeUKMSNDetectorSD *detSD = new HPGeUKMSNDetectorSD("/Detector", "DetectorHitsCollection");
+  HPGeUKMSNDetectorSD *detSD = new HPGeUKMSNDetectorSD("/Detector", "DetectorHitsCollection", fDeadLayerThickness);
   G4SDManager::GetSDMpointer()->AddNewDetector(detSD);
   SetSensitiveDetector("Detector", detSD, true);
 }
