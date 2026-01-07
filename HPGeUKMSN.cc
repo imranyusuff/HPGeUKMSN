@@ -21,7 +21,7 @@ long theSeed;
 
 int main(int argc, char *argv[])
 {
-  G4double deadLayerThicknessMM = 0.35;
+  G4double deadLayerThicknessMM = 0.6;
   G4int geometrySelection = 0;
   G4bool detailedIRWindow = false;
   G4bool alwaysSingleSource = false;
