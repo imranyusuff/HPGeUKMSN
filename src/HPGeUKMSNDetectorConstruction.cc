@@ -209,39 +209,51 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4ThreeVector vacuumGapTopPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight - (endcapHeight - detectorHolderHeight + baseShieldThickness)/2);
   G4VPhysicalVolume *vacuumGapTopPV = new G4PVPlacement(nullptr, vacuumGapTopPos, vacuumGapTopLV, "VacuumGapTop", worldLV, false, 0, fCheckOverlaps);
 
+  /* 0: point source within cylinder with adjustable detector to source base distance */
   if (fGeometrySelection == 0) {
     DefineExperimentGeometry0(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness);
   }
+  /* 1: point source on top of square tower for angle mesurements */
   else if (fGeometrySelection == 1) {
     DefineExperimentGeometry1(worldLV, baseShieldThickness);
   }
+  /* 2 | 2000: Cy?? container, with just the soil inside, no source on top */
   else if (fGeometrySelection == 2 || fGeometrySelection == 2000) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, false, false);
   }
+  /* 2001: Cy?? container, with just the soil inside, no source on top */
   else if (fGeometrySelection == 2001) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, false, false);
   }
+  /* 2002: Cy?? container, with just the soil inside, no source on top */
   else if (fGeometrySelection == 2002) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, false, false);
   }
+  /* 3 | 3000: Cy10 container, with soil, and with source on top */
   else if (fGeometrySelection == 3 || fGeometrySelection == 3000) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, true, false);
   }
+  /* 3001: Cy4.4 container, with soil, and with source on top */
   else if (fGeometrySelection == 3001) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, true, false);
   }
+  /* 3002: Cy6.5 container, with soil, and with source on top */
   else if (fGeometrySelection == 3002) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true, false);
   }
+  /* 3010: Cy10 container, empty, but with source on top */
   else if (fGeometrySelection == 3010) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, true, true);
   }
+  /* 3011: Cy4.4 container, empty, but with source on top */
   else if (fGeometrySelection == 3011) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, true, true);
   }
+  /* 3012: Cy6.5 container, empty, but with source on top */
   else if (fGeometrySelection == 3012) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true, true);
   }
+  /* Unrecognized geometry code */
   else {
     G4cout << "Geometry selection error." << G4endl;
     exit(1);    // TODO this is too harsh
