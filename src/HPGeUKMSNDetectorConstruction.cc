@@ -217,15 +217,15 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   else if (fGeometrySelection == 1) {
     DefineExperimentGeometry1(worldLV, baseShieldThickness);
   }
-  /* 2 | 2000: Cy?? container, with just the soil inside, no source on top */
+  /* 2 | 2000: Cy10 container, with just the soil inside, no source on top */
   else if (fGeometrySelection == 2 || fGeometrySelection == 2000) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0, false, false);
   }
-  /* 2001: Cy?? container, with just the soil inside, no source on top */
+  /* 2001: Cy4.4 container, with just the soil inside, no source on top */
   else if (fGeometrySelection == 2001) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1, false, false);
   }
-  /* 2002: Cy?? container, with just the soil inside, no source on top */
+  /* 2002: Cy6.5 container, with just the soil inside, no source on top */
   else if (fGeometrySelection == 2002) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, false, false);
   }
