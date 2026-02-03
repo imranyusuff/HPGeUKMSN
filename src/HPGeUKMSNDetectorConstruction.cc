@@ -65,15 +65,29 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   }
 
   // IAEA-375 standard calibration soil material
-  fIAEA375SoilMaterial = new G4Material("IAEA375Soil", 1.55 * g/cm3, 8);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Si"), 0.526);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Al"), 0.180);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Fe"), 0.120);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ca"), 0.075);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("K"),  0.045);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mg"), 0.023);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ti"), 0.015);
-  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Na"), 0.015);
+  fIAEA375SoilMaterial = new G4Material("IAEA375Soil", 1.223 * g/cm3, 22);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.4897247);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Si"), 0.3415);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Al"), 0.0615);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("K"),  0.03085);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ca"), 0.02885);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Fe"), 0.02285);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mg"), 0.00628);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ti"), 0.0051);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Na"), 0.004915);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("P"), 0.003365);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("S"), 0.0022);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Zr"), 0.0008035);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ba"), 0.000745);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mn"), 0.0004425);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Sr"), 0.000273);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cl"), 0.000188);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cr"), 0.0001345);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Rb"), 0.000113);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Zn"), 0.0000628);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cu"), 0.00004475);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ni"), 0.0000403);
+  fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Y"), 0.00001795);
 
   // Realistic vacuum between detector holder and endcap
   fVacuumMaterial = new G4Material("Vacuum",
