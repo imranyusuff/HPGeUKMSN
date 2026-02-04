@@ -80,6 +80,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4bool fCheckOverlaps;
 
     G4double fSrcBaseDistance = 180.*mm;
+    G4double fSoilDensity = 1.223 * g/cm3;
 };
 
 

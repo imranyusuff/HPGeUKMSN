@@ -65,7 +65,7 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   }
 
   // IAEA-375 standard calibration soil material
-  fIAEA375SoilMaterial = new G4Material("IAEA375Soil", 1.223 * g/cm3, 22);
+  fIAEA375SoilMaterial = new G4Material("IAEA375Soil", fSoilDensity, 22);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.4897247);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Si"), 0.3415);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Al"), 0.0615);
