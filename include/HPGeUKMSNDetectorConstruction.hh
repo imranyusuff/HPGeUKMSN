@@ -23,10 +23,13 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
 
     void SetSourceBaseDistance(G4double distance);
     void SetSourceXYPos(G4double x, G4double y);
+    void SetSoilDensity(G4double rho);
     G4double GetSourceBaseDistance() { return fSrcBaseDistance; }
 
   private:
     void DefineMaterials();
+    void DefineSoilMaterial();
+
     G4VPhysicalVolume *DefineVolumes();
 
     void DefineExperimentGeometry0(
@@ -58,6 +61,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4bool fDetailedIRWindow;
 
     G4GenericMessenger* fMessenger;
+    G4GenericMessenger* fSoilMessenger;
 
     G4Material *fDetMaterial;
     G4Material *fDetHolderMaterial;

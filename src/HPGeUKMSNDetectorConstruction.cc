@@ -64,6 +64,32 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
     fDetIRAlMaterial = nistManager->FindOrBuildMaterial("G4_Al");
   }
 
+  DefineSoilMaterial();
+
+  // Realistic vacuum between detector holder and endcap
+  fVacuumMaterial = new G4Material("Vacuum",
+                                   1.161e-11 * g/cm3,   // vacuum density at 300 K
+                                   2,                   // 2 elements
+                                   kStateGas,
+                                   300.0 * kelvin,      // vacuum temperature @ 300 K
+                                   1e-8 * bar);    // vacuum pressure at 300 K
+  fVacuumMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("N"), 0.78);
+  fVacuumMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.22);
+
+  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+}
+
+
+void HPGeUKMSNDetectorConstruction::DefineSoilMaterial()
+{
+  //THIS WOULD NOT WORK
+  //if (fIAEA375SoilMaterial) {
+  //  G4Material::GetMaterialTable()->remove(fIAEA375SoilMaterial);
+  //  fIAEA375SoilMaterial = nullptr;
+  //}
+  // so density must be set BEFORE /run/initialize!
+  // (or can we redo this init anytime?)
+
   // IAEA-375 standard calibration soil material
   fIAEA375SoilMaterial = new G4Material("IAEA375Soil", fSoilDensity, 22);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.4897247);
@@ -88,18 +114,6 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cu"), 0.00004475);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ni"), 0.0000403);
   fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Y"), 0.00001795);
-
-  // Realistic vacuum between detector holder and endcap
-  fVacuumMaterial = new G4Material("Vacuum",
-                                   1.161e-11 * g/cm3,   // vacuum density at 300 K
-                                   2,                   // 2 elements
-                                   kStateGas,
-                                   300.0 * kelvin,      // vacuum temperature @ 300 K
-                                   1e-8 * bar);    // vacuum pressure at 300 K
-  fVacuumMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("N"), 0.78);
-  fVacuumMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.22);
-
-  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
 
@@ -593,6 +607,16 @@ void HPGeUKMSNDetectorConstruction::SetSourceXYPos(G4double x, G4double y)
 }
 
 
+void HPGeUKMSNDetectorConstruction::SetSoilDensity(G4double rho)
+{
+  fSoilDensity = rho * g/cm3;
+
+  //DON'T BOTHER BELOW. See above.
+  //DefineSoilMaterial();
+  //G4cout << "New soil material:" << G4endl << fIAEA375SoilMaterial << G4endl;
+}
+
+
 void HPGeUKMSNDetectorConstruction::DefineCommands()
 {
   fMessenger = new G4GenericMessenger(this, "/hpge/source/", "Source control");
@@ -611,5 +635,13 @@ void HPGeUKMSNDetectorConstruction::DefineCommands()
   srcXYPosCmd.SetDefaultValue("0.");
   srcXYPosCmd.SetParameterName("y", true);
   srcXYPosCmd.SetDefaultValue("0.");
+
+  fSoilMessenger = new G4GenericMessenger(this, "/soil/", "Soil material control");
+
+  auto& soilDensityCmd = fSoilMessenger->DeclareMethod("density",
+                           &HPGeUKMSNDetectorConstruction::SetSoilDensity,
+                           "Density of soil material, in g/cm3.");
+  soilDensityCmd.SetParameterName("rho", true);
+  soilDensityCmd.SetDefaultValue("1.223");
 }
 
