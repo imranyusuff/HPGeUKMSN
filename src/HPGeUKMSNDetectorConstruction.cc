@@ -552,13 +552,24 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   }
 
   // This is the case if a point source is on the top of the sample instead
+  // UPDATE: now with a source holder plate between the source and the container.
   if (pointSourceOnTop) {
+    const double cubStandLength        = 110*mm;
+    const double cubSrcHolderThickness = 3*mm;
+
+    G4Box *cubSrcHolderS = new G4Box("cubSrcHolder", cubStandLength/2, cubStandLength/2, cubSrcHolderThickness/2);
+    G4LogicalVolume *cubSrcHolderLV = new G4LogicalVolume(cubSrcHolderS, fStandMaterial, "SourceHolderPlate");
+    G4ThreeVector cubSrcHolderPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight + cubSrcHolderThickness/2);
+    new G4PVPlacement(nullptr, cubSrcHolderPos, cubSrcHolderLV, "SourceHolderPlate", worldLV, false, 0, fCheckOverlaps);
+
     G4Tubs *srcS = new G4Tubs("source", 0, sourceRadius, sourceHeight/2, 0.*deg, 360.*deg);
     G4LogicalVolume *srcLV = new G4LogicalVolume(srcS, fSrcMaterial, "Source");
-    G4ThreeVector srcPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight + sourceHeight/2));
+    G4ThreeVector srcPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerHeight + cubSrcHolderThickness + sourceHeight/2));
     new G4PVPlacement(nullptr, srcPos, srcLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
+    G4VisAttributes green(G4Colour::Green());
     G4VisAttributes yellow(G4Colour::Yellow());
+    cubSrcHolderLV->SetVisAttributes(green);
     srcLV->SetVisAttributes(yellow);
   }
 }
