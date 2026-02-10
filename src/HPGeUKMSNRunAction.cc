@@ -10,12 +10,12 @@
 
 extern long theSeed;
 
-HPGeUKMSNRunAction::HPGeUKMSNRunAction()
+HPGeUKMSNRunAction::HPGeUKMSNRunAction(G4String outfnPrefix)
  : G4UserRunAction()
 {
   auto analysisManager = G4AnalysisManager::Instance();
   std::stringstream fn;
-  fn << "HPGeUKMSNrun_" << theSeed;
+  fn << outfnPrefix << "_" << theSeed;
   analysisManager->SetDefaultFileType("root");
   analysisManager->SetFileName(fn.str());
   analysisManager->CreateNtuple("energies", "Energies");

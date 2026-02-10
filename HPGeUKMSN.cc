@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
   G4int geometrySelection = 0;
   G4bool detailedIRWindow = false;
   G4bool alwaysSingleSource = false;
+  G4String outfnPrefix = "HPGeUKMSNrun";
 
   std::stringstream strCmdLine;
   strCmdLine << "Invoked as: ";
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
   }
 
   int opt;
-  while ((opt = getopt(argc, argv, "d:g:is")) != -1) {
+  while ((opt = getopt(argc, argv, "d:g:io:s")) != -1) {
     switch(opt) {
     case 'd':
       deadLayerThicknessMM = atof(optarg);
@@ -44,11 +45,14 @@ int main(int argc, char *argv[])
     case 'i':
       detailedIRWindow = true;
       break;
+    case 'o':
+      outfnPrefix = optarg;
+      break;
     case 's':
       alwaysSingleSource = true;
       break;
     default:
-      G4cerr << "Usage: " << argv[0] << " [-d deadlayer_thick/mm] [-g geom#] [-i] [-s] <other args for Geant4...>" << G4endl;
+      G4cerr << "Usage: " << argv[0] << " [-d deadlayer_thick/mm] [-g geom#] [-i] [-o prefix] [-s] <other args for Geant4...>" << G4endl;
       return 1;
     }
   }
@@ -82,7 +86,7 @@ int main(int argc, char *argv[])
 
   runManager->SetUserInitialization(physicsList);
 
-  runManager->SetUserInitialization(new HPGeUKMSNActionInitialization(geometrySelection, alwaysSingleSource));
+  runManager->SetUserInitialization(new HPGeUKMSNActionInitialization(outfnPrefix, geometrySelection, alwaysSingleSource));
 
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();
