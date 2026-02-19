@@ -60,26 +60,26 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4double fDeadLayerThickness;
     G4bool fDetailedIRWindow;
 
-    G4GenericMessenger* fMessenger;
-    G4GenericMessenger* fSoilMessenger;
+    G4GenericMessenger* fMessenger = nullptr;
+    G4GenericMessenger* fSoilMessenger = nullptr;
 
-    G4Material *fDetMaterial;
-    G4Material *fDetHolderMaterial;
-    G4Material *fDetIRKaptonMaterial;
-    G4Material *fDetIRMylarMaterial;
-    G4Material *fDetIRAlMaterial;
-    G4Material *fEndcapMaterial;
-    G4Material *fEndcapTopMaterial;
-    G4Material *fVacuumMaterial;
-    G4Material *fStopMaterial;
-    G4Material *fSrcMaterial;
-    G4Material *fStandMaterial;
-    G4Material *fContainerMaterial;
-    G4Material *fIAEA375SoilMaterial;
+    G4Material *fDetMaterial = nullptr;
+    G4Material *fDetHolderMaterial = nullptr;
+    G4Material *fDetIRKaptonMaterial = nullptr;
+    G4Material *fDetIRMylarMaterial = nullptr;
+    G4Material *fDetIRAlMaterial = nullptr;
+    G4Material *fEndcapMaterial = nullptr;
+    G4Material *fEndcapTopMaterial = nullptr;
+    G4Material *fVacuumMaterial = nullptr;
+    G4Material *fStopMaterial = nullptr;
+    G4Material *fSrcMaterial = nullptr;
+    G4Material *fStandMaterial = nullptr;
+    G4Material *fContainerMaterial = nullptr;
+    G4Material *fIAEA375SoilMaterial = nullptr;
 
-    G4VPhysicalVolume *fSrcPV;
-    G4VPhysicalVolume *fCylSrcHolderPV;
-    G4VPhysicalVolume *fCylSrcHolderWallPV;
+    G4VPhysicalVolume *fSrcPV = nullptr;
+    G4VPhysicalVolume *fCylSrcHolderPV = nullptr;
+    G4VPhysicalVolume *fCylSrcHolderWallPV = nullptr;
 
     G4bool fCheckOverlaps;
 
