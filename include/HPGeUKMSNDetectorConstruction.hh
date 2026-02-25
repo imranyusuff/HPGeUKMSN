@@ -24,6 +24,8 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     void SetSourceBaseDistance(G4double distance);
     void SetSourceXYPos(G4double x, G4double y);
     void SetSoilDensity(G4double rho);
+    void SetSoilCustomFile(std::string filename);
+
     G4double GetSourceBaseDistance() { return fSrcBaseDistance; }
 
   private:
@@ -76,6 +78,8 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fStandMaterial = nullptr;
     G4Material *fContainerMaterial = nullptr;
     G4Material *fIAEA375SoilMaterial = nullptr;
+
+    std::string fSoilCustomFile;
 
     G4VPhysicalVolume *fSrcPV = nullptr;
     G4VPhysicalVolume *fCylSrcHolderPV = nullptr;
