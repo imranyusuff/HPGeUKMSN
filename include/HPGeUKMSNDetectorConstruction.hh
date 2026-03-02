@@ -77,7 +77,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fSrcMaterial = nullptr;
     G4Material *fStandMaterial = nullptr;
     G4Material *fContainerMaterial = nullptr;
-    G4Material *fIAEA375SoilMaterial = nullptr;
+    G4Material *fSoilMaterial = nullptr;
 
     std::string fSoilCustomFile;
 

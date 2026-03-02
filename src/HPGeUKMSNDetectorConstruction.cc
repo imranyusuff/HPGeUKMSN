@@ -84,9 +84,9 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
 void HPGeUKMSNDetectorConstruction::DefineSoilMaterial()
 {
   //THIS WOULD NOT WORK
-  //if (fIAEA375SoilMaterial) {
-  //  G4Material::GetMaterialTable()->remove(fIAEA375SoilMaterial);
-  //  fIAEA375SoilMaterial = nullptr;
+  //if (fSoilMaterial) {
+  //  G4Material::GetMaterialTable()->remove(fSoilMaterial);
+  //  fSoilMaterial = nullptr;
   //}
   // so density must be set BEFORE /run/initialize!
   // (or can we redo this init anytime?)
@@ -95,46 +95,56 @@ void HPGeUKMSNDetectorConstruction::DefineSoilMaterial()
   G4cout << "Defining soil material..." << G4endl;
   if (fSoilCustomFile == "") {
     G4cout << "Using standard IAEA-375 soil as default." << G4endl;
-    fIAEA375SoilMaterial = new G4Material("IAEA375Soil", fSoilDensity, 22);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.4897247);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Si"), 0.3415);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Al"), 0.0615);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("K"),  0.03085);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ca"), 0.02885);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Fe"), 0.02285);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mg"), 0.00628);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ti"), 0.0051);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Na"), 0.004915);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("P"), 0.003365);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("S"), 0.0022);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Zr"), 0.0008035);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ba"), 0.000745);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mn"), 0.0004425);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Sr"), 0.000273);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cl"), 0.000188);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cr"), 0.0001345);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Rb"), 0.000113);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Zn"), 0.0000628);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cu"), 0.00004475);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ni"), 0.0000403);
-    fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Y"), 0.00001795);
+    fSoilMaterial = new G4Material("Soil", fSoilDensity, 22);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("O"), 0.4897247);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Si"), 0.3415);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Al"), 0.0615);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("K"),  0.03085);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ca"), 0.02885);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Fe"), 0.02285);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mg"), 0.00628);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ti"), 0.0051);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Na"), 0.004915);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("P"), 0.003365);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("S"), 0.0022);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Zr"), 0.0008035);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ba"), 0.000745);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Mn"), 0.0004425);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Sr"), 0.000273);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cl"), 0.000188);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cr"), 0.0001345);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Rb"), 0.000113);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Zn"), 0.0000628);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Cu"), 0.00004475);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Ni"), 0.0000403);
+    fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement("Y"), 0.00001795);
   }
   else {
     G4cout << "Opening custom soil composition file." << G4endl;
     std::ifstream soilCompFile(fSoilCustomFile);
-    int nElements;
-    soilCompFile >> nElements;
-    G4cout << "Read n(Elements) = " << nElements << G4endl;
-    fIAEA375SoilMaterial = new G4Material("IAEA375Soil", fSoilDensity, nElements);
-    for (int i=1; i<=nElements; i++) {
-      std::string elem;
-      double elemFraction;
-      soilCompFile >> elem >> elemFraction;
-      G4cout << "Element #" << i << ": " << elem << " massfraction " << elemFraction << G4endl;
-      fIAEA375SoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement(elem), elemFraction);
+    if (soilCompFile.is_open()) {
+      int nElements;
+      soilCompFile >> nElements;
+      G4cout << "Read n(Elements) = " << nElements << G4endl;
+      fSoilMaterial = new G4Material("Soil", fSoilDensity, nElements);
+      for (int i=1; i<=nElements; i++) {
+        std::string elem;
+        double elemFraction;
+        soilCompFile >> elem >> elemFraction;
+        if (soilCompFile.eof()) {
+          G4cout << "End of file reached so not enough elements to build material. Giving up." << G4endl;
+          exit(1);
+        }
+        G4cout << "Element #" << i << ": " << elem << " massfraction " << elemFraction << G4endl;
+        fSoilMaterial->AddElement(G4NistManager::Instance()->FindOrBuildElement(elem), elemFraction);
+      }
+      soilCompFile.close();
+      G4cout << "Custom soil composition file processing done." << G4endl;
     }
-    soilCompFile.close();
-    G4cout << "Custom soil composition file processing done." << G4endl;
+    else {
+      G4cout << "Error opening file. Exiting..." << G4endl;
+      exit(1);   // TODO again this is too harsh
+    }
   }
 }
 
@@ -566,7 +576,7 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
     // See if no point source on the top, then the IAEA-375 soil is the source
     const G4String soilString(pointSourceOnTop ? "Soil" : "Source");
     G4Tubs *soilS = new G4Tubs("soil", 0, containerDiameter/2 - containerThickness, soilHeight/2, 0.*deg, 360.*deg);
-    G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fIAEA375SoilMaterial, "Soil");
+    G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fSoilMaterial, "Soil");
     G4ThreeVector soilPos = G4ThreeVector(0, 0, (baseShieldThickness + endcapHeight + endcapTopThickness + containerThickness + soilHeight/2));
     new G4PVPlacement(nullptr, soilPos, soilLV, soilString, worldLV, false, 0, fCheckOverlaps);
     G4VisAttributes brown(G4Colour::Brown());
@@ -646,7 +656,7 @@ void HPGeUKMSNDetectorConstruction::SetSoilDensity(G4double rho)
 
   //DON'T BOTHER BELOW. See above.
   //DefineSoilMaterial();
-  //G4cout << "New soil material:" << G4endl << fIAEA375SoilMaterial << G4endl;
+  //G4cout << "New soil material:" << G4endl << fSoilMaterial << G4endl;
 }
 
 
