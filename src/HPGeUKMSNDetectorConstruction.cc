@@ -545,7 +545,7 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
   const double containerHeight = (variant == 2) ? 65.*mm : (variant == 1) ? 44.*mm : 100.*mm;
   const double containerDiameter = (variant == 2) ? 55.*mm : (variant == 1) ? 70.*mm : 65.*mm;
 
-  const double soilHeight = (variant == 2) ? 42.*mm : (variant == 1) ? 20.*mm : 75.*mm;
+  const double soilHeight = (variant == 2) ? 47.*mm : (variant == 1) ? 20.*mm : 80.*mm;
 
   // for point source on top if requested
   const double sourceRadius = 25.4*mm/2;
