@@ -56,6 +56,14 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
       const bool noSoil
     );
 
+    void DefineExperimentGeometry4(
+      G4LogicalVolume * const worldLV,
+      const double baseShieldThickness,
+      const double endcapHeight,
+      const double endcapTopThickness,
+      const int soilHeightCode
+    );
+
     void DefineCommands();
 
     G4int fGeometrySelection;
@@ -78,6 +86,7 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4Material *fStandMaterial = nullptr;
     G4Material *fContainerMaterial = nullptr;
     G4Material *fSoilMaterial = nullptr;
+    G4Material *fVialMaterial = nullptr;
 
     std::string fSoilCustomFile;
 

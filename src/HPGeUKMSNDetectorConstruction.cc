@@ -59,6 +59,7 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fStandMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fContainerMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
+  fVialMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   if (fDetailedIRWindow) {
     fDetIRKaptonMaterial = nistManager->FindOrBuildMaterial("G4_KAPTON");
     fDetIRMylarMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
@@ -312,6 +313,18 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   /* 3012: Cy6.5 container, empty, but with source on top */
   else if (fGeometrySelection == 3012) {
     DefineExperimentGeometry2(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2, true, true);
+  }
+  /* 4 | 4000: Small container for NAA, 1g of soil */
+  else if (fGeometrySelection == 4 || fGeometrySelection == 4000) {
+    DefineExperimentGeometry4(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 0);
+  }
+  /* 4001: Small container for NAA, 0.7g of soil */
+  else if (fGeometrySelection == 4001) {
+    DefineExperimentGeometry4(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 1);
+  }
+  /* 4002: Small container for NAA, 0.1g of soil */
+  else if (fGeometrySelection == 4002) {
+    DefineExperimentGeometry4(worldLV, baseShieldThickness, endcapHeight, endcapTopThickness, 2);
   }
   /* Unrecognized geometry code */
   else {
@@ -604,6 +617,91 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry2(
     cubSrcHolderLV->SetVisAttributes(green);
     srcLV->SetVisAttributes(yellow);
   }
+}
+
+
+void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
+  G4LogicalVolume * const worldLV,
+  const double baseShieldThickness,
+  const double endcapHeight,
+  const double endcapTopThickness,
+  const int soilHeightCode)
+{
+  const double cylStandOuterRadius   = 35*mm;
+  const double cylStandThickness     = 3*mm;
+  const double cylStandHeight        = 270*mm;
+  const double cylSrcHolderThickness = 3*mm;
+
+  const double cylSrcHolderWallHeight = 20*mm;
+
+  const double vialHeight        = 30.*mm;
+  const double vialRadius        = 5.*mm;
+  const double vialThickness     = 1.*mm;
+  const double vialBaseHeight    = 2.*mm;
+  const double vialBaseThickness = 1.*mm;
+
+  const double vialCapThickness      = 2.*mm;
+  const double vialCapInnerThickness = 1.*mm;
+  const double vialCapInnerHeight    = 2.*mm;
+
+  const double soilHeight = 15.*mm;   // TODO make this variable
+
+  fSrcBaseDistance = 50.*mm;      /* NAA measurements at 5 cm and 10 cm */
+
+  G4Tubs *cylStandS = new G4Tubs("cylindricalStand", cylStandOuterRadius - cylStandThickness, cylStandOuterRadius, cylStandHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *cylStandLV = new G4LogicalVolume(cylStandS, fStandMaterial, "CylindricalStand");
+  G4ThreeVector cylStandPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + cylStandHeight/2);
+  new G4PVPlacement(nullptr, cylStandPos, cylStandLV, "CylindricalStand", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *cylSrcHolderWallS = new G4Tubs("cylSrcHolderWall", cylStandOuterRadius - 2*cylStandThickness, cylStandOuterRadius - cylStandThickness, cylSrcHolderWallHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *cylSrcHolderWallLV = new G4LogicalVolume(cylSrcHolderWallS, fStandMaterial, "CylStandSrcHolderWall");
+  G4ThreeVector cylSrcHolderWallPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance - cylSrcHolderThickness + cylSrcHolderWallHeight/2);
+  fCylSrcHolderWallPV = new G4PVPlacement(nullptr, cylSrcHolderWallPos, cylSrcHolderWallLV, "CylStandSrcHolderWall", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *cylSrcHolderS = new G4Tubs("cylSrcHolder", 0, cylStandOuterRadius - 2*cylStandThickness, cylSrcHolderThickness/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *cylSrcHolderLV = new G4LogicalVolume(cylSrcHolderS, fStandMaterial, "CylStandSrcHolder");
+  G4ThreeVector cylSrcHolderPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance - cylSrcHolderThickness/2);
+  fCylSrcHolderPV = new G4PVPlacement(nullptr, cylSrcHolderPos, cylSrcHolderLV, "CylStandSrcHolder", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *vialMainTubeS = new G4Tubs("vialMainTube", vialRadius-vialThickness, vialRadius, vialHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *vialMainTubeLV = new G4LogicalVolume(vialMainTubeS, fVialMaterial, "VialMainTube");
+  G4ThreeVector vialMainTubePos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialHeight/2);
+  new G4PVPlacement(nullptr, vialMainTubePos, vialMainTubeLV, "VialMainTube", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *vialBaseS = new G4Tubs("vialBase", 0, vialRadius-vialThickness, vialBaseThickness/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *vialBaseLV = new G4LogicalVolume(vialBaseS, fVialMaterial, "VialBase");
+  G4ThreeVector vialBasePos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialBaseHeight + vialBaseThickness/2);
+  new G4PVPlacement(nullptr, vialBasePos, vialBaseLV, "VialBase", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *vialCapS = new G4Tubs("vialCap", 0, vialRadius, vialCapThickness/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *vialCapLV = new G4LogicalVolume(vialCapS, fVialMaterial, "VialCap");
+  G4ThreeVector vialCapPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialHeight + vialCapThickness/2);
+  new G4PVPlacement(nullptr, vialCapPos, vialCapLV, "VialCap", worldLV, false, 0, fCheckOverlaps);
+
+  G4Tubs *vialCapInnerS = new G4Tubs("vialCapInner", vialRadius-vialThickness-vialCapInnerThickness, vialRadius-vialThickness, vialCapInnerHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *vialCapInnerLV = new G4LogicalVolume(vialCapInnerS, fVialMaterial, "VialCapInner");
+  G4ThreeVector vialCapInnerPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialHeight - vialCapInnerHeight/2);
+  new G4PVPlacement(nullptr, vialCapInnerPos, vialCapInnerLV, "VialCapInner", worldLV, false, 0, fCheckOverlaps);
+
+  // the following define the soil, the 'source' geometry for this experiment
+  G4Tubs *soilS = new G4Tubs("soil", 0, vialRadius-vialThickness, soilHeight/2, 0.*deg, 360.*deg);
+  G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fSoilMaterial, "Soil");
+  G4ThreeVector soilPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialBaseHeight + vialBaseThickness + soilHeight/2);
+  new G4PVPlacement(nullptr, soilPos, soilLV, "Source", worldLV, false, 0, fCheckOverlaps);
+
+  G4VisAttributes green(G4Colour::Green());
+  G4VisAttributes green2(G4Colour(0.1, 0.9, 0.5));
+  G4VisAttributes green3(G4Colour(0.1, 0.8, 0.6));
+  G4VisAttributes brown(G4Colour::Brown());
+
+  cylStandLV->SetVisAttributes(green);
+  cylSrcHolderWallLV->SetVisAttributes(green2);
+  cylSrcHolderLV->SetVisAttributes(green2);
+  vialMainTubeLV->SetVisAttributes(green3);
+  vialBaseLV->SetVisAttributes(green3);
+  vialCapLV->SetVisAttributes(green3);
+  vialCapInnerLV->SetVisAttributes(green3);
+  soilLV->SetVisAttributes(brown);
 }
 
 
