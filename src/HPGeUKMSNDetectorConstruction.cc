@@ -666,28 +666,28 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
   G4Tubs *vialMainTubeS = new G4Tubs("vialMainTube", vialRadius-vialThickness, vialRadius, vialHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *vialMainTubeLV = new G4LogicalVolume(vialMainTubeS, fVialMaterial, "VialMainTube");
   G4ThreeVector vialMainTubePos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialHeight/2);
-  new G4PVPlacement(nullptr, vialMainTubePos, vialMainTubeLV, "VialMainTube", worldLV, false, 0, fCheckOverlaps);
+  fVialMainTubePV = new G4PVPlacement(nullptr, vialMainTubePos, vialMainTubeLV, "VialMainTube", worldLV, false, 0, fCheckOverlaps);
 
   G4Tubs *vialBaseS = new G4Tubs("vialBase", 0, vialRadius-vialThickness, vialBaseThickness/2, 0.*deg, 360.*deg);
   G4LogicalVolume *vialBaseLV = new G4LogicalVolume(vialBaseS, fVialMaterial, "VialBase");
   G4ThreeVector vialBasePos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialBaseHeight + vialBaseThickness/2);
-  new G4PVPlacement(nullptr, vialBasePos, vialBaseLV, "VialBase", worldLV, false, 0, fCheckOverlaps);
+  fVialBasePV = new G4PVPlacement(nullptr, vialBasePos, vialBaseLV, "VialBase", worldLV, false, 0, fCheckOverlaps);
 
   G4Tubs *vialCapS = new G4Tubs("vialCap", 0, vialRadius, vialCapThickness/2, 0.*deg, 360.*deg);
   G4LogicalVolume *vialCapLV = new G4LogicalVolume(vialCapS, fVialMaterial, "VialCap");
   G4ThreeVector vialCapPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialHeight + vialCapThickness/2);
-  new G4PVPlacement(nullptr, vialCapPos, vialCapLV, "VialCap", worldLV, false, 0, fCheckOverlaps);
+  fVialCapPV = new G4PVPlacement(nullptr, vialCapPos, vialCapLV, "VialCap", worldLV, false, 0, fCheckOverlaps);
 
   G4Tubs *vialCapInnerS = new G4Tubs("vialCapInner", vialRadius-vialThickness-vialCapInnerThickness, vialRadius-vialThickness, vialCapInnerHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *vialCapInnerLV = new G4LogicalVolume(vialCapInnerS, fVialMaterial, "VialCapInner");
   G4ThreeVector vialCapInnerPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialHeight - vialCapInnerHeight/2);
-  new G4PVPlacement(nullptr, vialCapInnerPos, vialCapInnerLV, "VialCapInner", worldLV, false, 0, fCheckOverlaps);
+  fVialCapInnerPV = new G4PVPlacement(nullptr, vialCapInnerPos, vialCapInnerLV, "VialCapInner", worldLV, false, 0, fCheckOverlaps);
 
   // the following define the soil, the 'source' geometry for this experiment
   G4Tubs *soilS = new G4Tubs("soil", 0, vialRadius-vialThickness, soilHeight/2, 0.*deg, 360.*deg);
   G4LogicalVolume *soilLV = new G4LogicalVolume(soilS, fSoilMaterial, "Soil");
   G4ThreeVector soilPos = G4ThreeVector(0, 0, baseShieldThickness + endcapHeight + endcapTopThickness + fSrcBaseDistance + vialBaseHeight + vialBaseThickness + soilHeight/2);
-  new G4PVPlacement(nullptr, soilPos, soilLV, "Source", worldLV, false, 0, fCheckOverlaps);
+  fSoilPV = new G4PVPlacement(nullptr, soilPos, soilLV, "Source", worldLV, false, 0, fCheckOverlaps);
 
   G4VisAttributes green(G4Colour::Green());
   G4VisAttributes green2(G4Colour(0.1, 0.9, 0.5));
@@ -715,19 +715,46 @@ void HPGeUKMSNDetectorConstruction::ConstructSDandField()
 
 void HPGeUKMSNDetectorConstruction::SetSourceBaseDistance(G4double distance)
 {
-  if (!fSrcPV || !fCylSrcHolderPV || !fCylSrcHolderWallPV) {
+  // this command is only for certain geometry modes
+  if (!(fGeometrySelection == 0 || fGeometrySelection == 4 || fGeometrySelection / 1000 == 4)) {
+      G4cerr << "This command is not applicable for this geometry." << G4endl;
+      return;
+  }
+
+  if ((fGeometrySelection == 0 && (!fSrcPV || !fCylSrcHolderPV || !fCylSrcHolderWallPV)) ||
+      ((fGeometrySelection == 4 || fGeometrySelection / 1000 == 4) &&
+        (!fCylSrcHolderPV || !fCylSrcHolderWallPV || !fVialMainTubePV ||
+         !fVialBasePV || !fVialCapPV || !fVialCapInnerPV || !fSoilPV))) {
       G4cerr << "Detector has not yet been constructed." << G4endl;
       return;
   }
 
   const double oldDistance = fSrcBaseDistance;
   fSrcBaseDistance = distance;
-  fSrcPV->SetTranslation(G4ThreeVector(
-    0, 0, fSrcPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
-  fCylSrcHolderWallPV->SetTranslation(G4ThreeVector(
-    0, 0, fCylSrcHolderWallPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
-  fCylSrcHolderPV->SetTranslation(G4ThreeVector(
-    0, 0, fCylSrcHolderPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fSrcPV)
+    fSrcPV->SetTranslation(G4ThreeVector(
+      0, 0, fSrcPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fCylSrcHolderWallPV)
+    fCylSrcHolderWallPV->SetTranslation(G4ThreeVector(
+      0, 0, fCylSrcHolderWallPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fCylSrcHolderPV)
+    fCylSrcHolderPV->SetTranslation(G4ThreeVector(
+      0, 0, fCylSrcHolderPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fVialMainTubePV)
+    fVialMainTubePV->SetTranslation(G4ThreeVector(
+      0, 0, fVialMainTubePV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fVialBasePV)
+    fVialBasePV->SetTranslation(G4ThreeVector(
+      0, 0, fVialBasePV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fVialCapPV)
+    fVialCapPV->SetTranslation(G4ThreeVector(
+      0, 0, fVialCapPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fVialCapInnerPV)
+    fVialCapInnerPV->SetTranslation(G4ThreeVector(
+      0, 0, fVialCapInnerPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
+  if (fSoilPV)
+    fSoilPV->SetTranslation(G4ThreeVector(
+      0, 0, fSoilPV->GetTranslation().z() - oldDistance + fSrcBaseDistance));
 
   // tell G4RunManager that we change the geometry
   G4RunManager::GetRunManager()->GeometryHasBeenModified();

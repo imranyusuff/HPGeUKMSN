@@ -93,6 +93,11 @@ class HPGeUKMSNDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume *fSrcPV = nullptr;
     G4VPhysicalVolume *fCylSrcHolderPV = nullptr;
     G4VPhysicalVolume *fCylSrcHolderWallPV = nullptr;
+    G4VPhysicalVolume *fVialMainTubePV = nullptr;
+    G4VPhysicalVolume *fVialBasePV = nullptr;
+    G4VPhysicalVolume *fVialCapPV = nullptr;
+    G4VPhysicalVolume *fVialCapInnerPV = nullptr;
+    G4VPhysicalVolume *fSoilPV = nullptr;
 
     G4bool fCheckOverlaps;
 
