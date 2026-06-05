@@ -112,11 +112,15 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
   G4VPhysicalVolume *srcPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("Source");
   const G4ThreeVector src3V = srcPV->GetObjectTranslation();
   G4ThreeVector displacement;
-  // Source from soil geometry in soil geometry mode and soil as source
+
+  // Source from soil geometry in soil geometry mode and soil as source.
+  // Source also from soil geometry in NAA setup...
   if (fGeometrySelection == 2 ||
       fGeometrySelection == 2000 ||
       fGeometrySelection == 2001 ||
-      fGeometrySelection == 2002) {
+      fGeometrySelection == 2002 ||
+      fGeometrySelection == 4 ||
+      fGeometrySelection/1000 == 4) {
     G4LogicalVolume *srcLV = srcPV->GetLogicalVolume();
     G4Tubs *srcS = dynamic_cast<G4Tubs *>(srcLV->GetSolid());
     G4double srcRadius = srcS->GetOuterRadius();
@@ -128,6 +132,8 @@ void HPGeUKMSNPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     genZ = 2. * G4UniformRand() * srcZov2 - srcZov2;
     displacement.set(genX, genY, genZ);
   }
+
+  // Now place the particle gun into the correct location
   const G4ThreeVector genPos = src3V + displacement;
   fParticleGun->SetParticlePosition(genPos);
 
