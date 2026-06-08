@@ -59,7 +59,9 @@ void HPGeUKMSNDetectorConstruction::DefineMaterials()
   fSrcMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fStandMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
   fContainerMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
-  fVialMaterial = nistManager->FindOrBuildMaterial("G4_PLEXIGLASS");
+  const G4double ldpeDensity = 0.92 * g/cm3;
+  G4Material* ldpe = nistManager->BuildMaterialWithNewDensity("LDPE_Polyethylene", "G4_POLYETHYLENE", ldpeDensity);
+  fVialMaterial = ldpe;
   if (fDetailedIRWindow) {
     fDetIRKaptonMaterial = nistManager->FindOrBuildMaterial("G4_KAPTON");
     fDetIRMylarMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
@@ -634,9 +636,9 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
 
   const double cylSrcHolderWallHeight = 20*mm;
 
-  const double vialHeight        = 30.*mm;
-  const double vialRadius        = 5.*mm;
-  const double vialThickness     = 1.*mm;
+  const double vialHeight        = 55.*mm;
+  const double vialRadius        = 8.6*mm;
+  const double vialThickness     = 0.9*mm;
   const double vialBaseHeight    = 2.*mm;
   const double vialBaseThickness = 1.*mm;
 
