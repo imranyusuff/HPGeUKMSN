@@ -341,8 +341,8 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   G4VisAttributes yellow(G4Colour::Yellow());
   G4VisAttributes magenta(G4Colour::Magenta());
   G4VisAttributes cyan(G4Colour::Cyan());
-  G4VisAttributes gray(G4Colour::Gray());
-  G4VisAttributes darkgray(G4Colour(0.25, 0.25, 0.25));
+  G4VisAttributes grey(G4Colour::Grey());
+  G4VisAttributes darkgrey(G4Colour(0.25, 0.25, 0.25));
 
   worldLV->SetVisAttributes(invisible);
   baseshieldLV->SetVisAttributes(red);
@@ -350,10 +350,10 @@ G4VPhysicalVolume *HPGeUKMSNDetectorConstruction::DefineVolumes()
   doorshieldLV->SetVisAttributes(magenta);
   detLV->SetVisAttributes(cyan);
   detHolderLV->SetVisAttributes(blue);
-  endcapLV->SetVisAttributes(gray);
-  endcapTopLV->SetVisAttributes(gray);
-  vacuumGapTubLV->SetVisAttributes(darkgray);
-  vacuumGapTopLV->SetVisAttributes(darkgray);
+  endcapLV->SetVisAttributes(grey);
+  endcapTopLV->SetVisAttributes(grey);
+  vacuumGapTubLV->SetVisAttributes(darkgrey);
+  vacuumGapTopLV->SetVisAttributes(darkgrey);
 
   return worldPV;
 }
@@ -636,15 +636,15 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
 
   const double cylSrcHolderWallHeight = 20*mm;
 
-  const double vialHeight        = 55.*mm;
-  const double vialRadius        = 8.6*mm;
-  const double vialThickness     = 0.9*mm;
-  const double vialBaseHeight    = 2.*mm;
+  const double vialHeight        = 30.5*mm;
+  const double vialRadius        = 7.0*mm;
+  const double vialThickness     = 1.0*mm;
+  const double vialBaseHeight    = 1.*mm;
   const double vialBaseThickness = 1.*mm;
 
-  const double vialCapThickness      = 2.*mm;
+  const double vialCapThickness      = 1.*mm;
   const double vialCapInnerThickness = 1.*mm;
-  const double vialCapInnerHeight    = 2.*mm;
+  const double vialCapInnerHeight    = 3.5*mm;
 
   const double soilHeight = 15.*mm;   // TODO make this variable
 
