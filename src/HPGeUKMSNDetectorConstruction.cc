@@ -627,7 +627,7 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
   const double baseShieldThickness,
   const double endcapHeight,
   const double endcapTopThickness,
-  const int soilHeightCode)
+  const int soilMassCode)
 {
   const double cylStandOuterRadius   = 35*mm;
   const double cylStandThickness     = 3*mm;
@@ -646,7 +646,8 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
   const double vialCapInnerThickness = 1.*mm;
   const double vialCapInnerHeight    = 3.5*mm;
 
-  const double soilHeight = 15.*mm;   // TODO make this variable
+  const double soilMass = (soilMassCode == 2) ? 0.1*gram : (soilMassCode == 1) ? 0.7*gram : 1.0*gram;
+  const double soilHeight = soilMass / fSoilMaterial->GetDensity() / (CLHEP::pi * (vialRadius-vialThickness)*(vialRadius-vialThickness));
 
   fSrcBaseDistance = 50.*mm;      /* NAA measurements at 5 cm and 10 cm */
 
@@ -704,6 +705,12 @@ void HPGeUKMSNDetectorConstruction::DefineExperimentGeometry4(
   vialCapLV->SetVisAttributes(green3);
   vialCapInnerLV->SetVisAttributes(green3);
   soilLV->SetVisAttributes(brown);
+
+  G4cout << "Soil height  = " << soilHeight/cm << " cm" << G4endl;
+  G4cout << "Soil density = " << soilLV->GetMaterial()->GetDensity()/(g/(cm*cm*cm)) << " g/cm^3" << G4endl;
+  G4cout << "Soil volume  = " << soilLV->GetSolid()->GetCubicVolume()/(cm*cm*cm) << " cm^3" << G4endl;
+  G4cout << "Soil mass    = " << soilLV->GetMass()/g << " gram" << G4endl;
+  G4cout << "Soil centre coordinate: " << fSoilPV->GetTranslation() << G4endl;
 }
 
 
